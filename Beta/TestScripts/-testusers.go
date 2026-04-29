@@ -50,9 +50,19 @@
 
 {{/* FINAL CLEANUP STAGE (-1) */}}
 {{ if eq $currentIndex -1 }}
-    {{ dbDel 0 "TEST_banana_global" }}
-    {{ dbDel 0 $progressKey }}
-    ✅ **[DELETED] Cleanup Complete!** Test Globals and progress key have been removed.
+    {{ if $isDeleteMode }}
+        {{ dbDel 0 "TEST_banana_global" }}
+        {{ dbDel 0 "TEST_prestige_global" }}
+        {{ dbDel 0 $progressKey }}
+        ✅ **[DELETED] Cleanup Complete!** Test Globals and progress key have been removed.
+    {{ else }}
+        {{ $g := sdict "pity" 0 "oily" false "crash" 0 "season" 3 }}
+        {{ $m := sdict "180128558776057856" 3 "600533807132835851" 2 "149357474695217152" 1 }}
+        {{ dbSet 0 "TEST_banana_global" $g }}
+        {{ dbSet 0 "TEST_prestige_global" $m }}
+        {{ dbDel 0 $progressKey }}
+        ✅ **[ADDED] Success!** All 30 test users and Test Globals have been inserted.
+    {{ end }}
 {{ else }}
     {{ $endIndex := add $currentIndex $batchSize }}
     {{ if gt $endIndex (len $data) }} {{ $endIndex = len $data }} {{ end }}
@@ -80,8 +90,8 @@
             {{ dbSet 0 $progressKey -1 }}
             🔄 **[DELETED] All test users processed.** Next run will wipe global data.
         {{ else }}
-            {{ dbDel 0 $progressKey }}
-            ✅ **[ADDED] Success!** All 30 test users have been inserted.
+            {{ dbSet 0 $progressKey -1 }}
+            🔄 **[ADDED] All test users processed.** Next run add global data.
         {{ end }}
     {{ else }}
         {{ dbSet 0 $progressKey $endIndex }}

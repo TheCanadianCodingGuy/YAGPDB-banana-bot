@@ -1,19 +1,45 @@
+{{ $now := currentTime }}
+{{ $startOfThisMonth := (newDate $now.Year (toInt $now.Month) 1 0 0 0) }}
+{{ $seasonStart := $startOfThisMonth.AddDate 0 1 0 }}
+{{ $seasonStartUnix := $seasonStart.Unix }}
+{{ $lockoutStartUnix := sub $seasonStartUnix 21600 }}
+{{ if ge (toInt $now.Unix) (toInt $lockoutStartUnix) }}
+    🚫 **The season has ended!** 
+    Tallying is currently underway and preparations for the new season are in progress.
+    **Next season starts at:** <t:{{ $seasonStartUnix }}:F> (<t:{{ $seasonStartUnix }}:R>)
+    {{ return }}
+{{ end }}
+
 {{/* Configuration */}}
 {{ $dbKey := "TEST_banana_slips" }}
 {{ $prestigeGlobal := "TEST_prestige_global" }}
+{{ $keyGlobal := "TEST_banana_global" }}
 {{ $limit := 10 }}
 {{ $fetchAmount := 25 }}
+
+{{/* 1. Season & Global Data Fetch */}}
+{{ $global := sdict "season" 1 }}{{ with (dbGet 0 $keyGlobal) }}{{ $global = dict .Value | sdict }}{{ end }}
+{{ $prestigeMap := sdict }}{{ with (dbGet 0 $prestigeGlobal) }}{{ $prestigeMap = dict .Value | sdict }}{{ end }}
+
+{{/* 2. Dynamic Time Calculation */}}
+{{/* Start of Month: Current Year-Month-01 00:00:00 */}}
+{{ $startOfMonth := (newDate currentTime.Year (toInt currentTime.Month) 1 0 0 0) }}
+
+{{/* End of Month: (Start of Month + 1 Month) - 6 Hours */}}
+{{ $nextMonth := (add $startOfMonth.Month 1) }}
+{{ $nextYear := $startOfMonth.Year }}
+{{ if gt $nextMonth 12 }}{{ $nextMonth = 1 }}{{ $nextYear = add $nextYear 1 }}{{ end }}
+{{ $endOfSeason := (newDate $nextYear (toInt $nextMonth) 1 0 0 0).Add (mult -6 3600 | toDuration) }}
 
 {{ $top := dbTopEntries $dbKey $fetchAmount 0 }}
 
 {{ if not $top }}
     [TEST] 🍌 **The floors are clean!** No one has slipped on a banana peel yet.
 {{ else }}
-    ### [TEST] 🍌 Banana Peel Hall of Shame (Top 10)
-{{- /* 1. Fetch the Global Prestige Map */ -}}
-{{- $prestigeMap := sdict -}}
-{{- with (dbGet 0 $prestigeGlobal) }}{{ $prestigeMap = dict .Value | sdict }}{{ end -}}
-
+    ### 🏆 Banana Season {{ $global.season }} Hall of Shame (Top 10)
+    **Starts:** <t:{{ $startOfMonth.Unix }}:F>
+    **Ends:** <t:{{ $endOfSeason.Unix }}:F> (<t:{{ $endOfSeason.Unix }}:R>)
+{{- "\n\u200b\n" -}}
 {{- $displayCount := 0 -}}
 {{- $prevValue := -1 -}}
 {{- $rank := 0 -}}
@@ -29,13 +55,11 @@
             {{- end -}}
             {{- $prevValue = $val -}}
             
-            {{- /* 2. Sanitize Name */ -}}
             {{- $rawName := $entry.User.Username -}}
             {{- if $member.Nick }}{{ $rawName = $member.Nick -}}
             {{- else if $entry.User.Globalname }}{{ $rawName = $entry.User.Globalname }}{{ end -}}
             {{- $name := reReplace `([*_~>|\x60])` $rawName `\$1` -}}
 
-            {{- /* 3. Lookup Prestige */ -}}
             {{- $userPrestige := index $prestigeMap (str $entry.User.ID) | or 0 -}}
             {{- if gt (toInt $userPrestige) 0 -}}
                 {{- $name = printf "(🏆%d) %s" (toInt $userPrestige) $name -}}

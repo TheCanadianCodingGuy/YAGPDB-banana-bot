@@ -1,3 +1,15 @@
+{{ $now := currentTime }}
+{{ $startOfThisMonth := (newDate $now.Year (toInt $now.Month) 1 0 0 0) }}
+{{ $seasonStart := $startOfThisMonth.AddDate 0 1 0 }}
+{{ $seasonStartUnix := $seasonStart.Unix }}
+{{ $lockoutStartUnix := sub $seasonStartUnix 21600 }}
+{{ if ge (toInt $now.Unix) (toInt $lockoutStartUnix) }}
+    🚫 **The season has ended!** 
+    Tallying is currently underway and preparations for the new season are in progress.
+    **Next season starts at:** <t:{{ $seasonStartUnix }}:F> (<t:{{ $seasonStartUnix }}:R>)
+    {{ return }}
+{{ end }}
+
 {{ $keySlips := "TEST_banana_slips" }}
 {{ $keyCD := "TEST_banana_cooldown" }}
 {{ $keyData := "TEST_banana_data" }}
@@ -35,7 +47,7 @@
 {{ end }}
 
 {{ $topEntries := dbTopEntries $keySlips 100 0 }}
-
+{{ $cooldownData := false }}
 {{ if and $cooldownData (not $userData.turbo) }}
     {{ $userName }}, you look around but see no banana peel to slip on! 
     **Try again <t:{{ toInt $cooldownData.Value }}:R>!**

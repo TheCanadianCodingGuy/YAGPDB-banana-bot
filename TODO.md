@@ -1,7 +1,7 @@
-1) Test -banana
-2) adapt -topslips for new dataset and prestige
-4) adapt userpurge for new dataset + limit of 5 calls db
-5) Script database purge.
+1) Test -banana (spliplosion calls db too many times)
+4) create new userpurge for new dataset + limit of 5 calls db
+5) Create temporary data purge with old dataset (use the userpurge.go)
+5) Script database purge with old data for now.
 7) Script top 3 reward with a +3, 2, 1, at end of season.
 8) Script end of seasons
     - Calculate points
@@ -9,7 +9,7 @@
     - lock the banana, topslips, topflips command for 6 hours
     - have the cronjob run every minute to delete the user list (have it cron??? or check.)
     - start new season at the start of the month with message (cron every month)
-9) for everything, show end of season time (6h before end of each month) in scripts that show leaderboards.
+    - reverts all global to neutral + increment season.
 10) end of season points award must give the point attribution award.
 12) make new channel only respond to commands and erase other messages.
 
