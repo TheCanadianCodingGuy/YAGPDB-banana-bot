@@ -1,0 +1,2 @@
+At the start of every month at 00:00 UTC, this script will announce the start of the new season and the end of the previous season in a specified channel. 
+It calculates the season start time based on the current date and announces it accordingly. with the proper season number (already calculated by tally).

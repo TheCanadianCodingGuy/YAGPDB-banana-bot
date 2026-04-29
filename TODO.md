@@ -1,20 +1,16 @@
 1) Test -banana (spliplosion calls db too many times)
-4) create new userpurge for new dataset + limit of 5 calls db
-5) Create temporary data purge with old dataset (use the userpurge.go)
-5) Script database purge with old data for now.
-7) Script top 3 reward with a +3, 2, 1, at end of season.
-8) Script end of seasons
-    - Calculate points
-    - Add points to users (add to data json)
-    - lock the banana, topslips, topflips command for 6 hours
-    - have the cronjob run every minute to delete the user list (have it cron??? or check.)
-    - start new season at the start of the month with message (cron every month)
-    - reverts all global to neutral + increment season.
-10) end of season points award must give the point attribution award.
-12) make new channel only respond to commands and erase other messages.
+   - Test if all work correctly
+   - Test if right number of slips for each.
+   - Test messages, make sure it looks nice enough and descriptive
 
-
-
+2) Create Prestige award and store script + reset TEST_banana_global data and +1 season
+3) Create purge with old data for cron tab + reset TEST_banana_global data and +1 season
+4) make new command -banana (responds to new channel)
+5) cron job to announce new season start.
+6) make -banana obselete in general, new message to go to the enw channel and use it there
+7) make new channel only respond to commands and erase other messages.
+8) Create purge with new data for cron tab.
+9) prestige leaderboard
 
 
 
