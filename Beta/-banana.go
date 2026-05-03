@@ -11,7 +11,6 @@
 {{end}}
 
 {{$keySlips := "TEST_banana_slips"}}
-{{$keyCD := "TEST_banana_cooldown"}}
 {{$keyData := "TEST_banana_data"}}
 {{$keyGlobal := "TEST_banana_global"}}
 {{$prestigeGlobal := "TEST_prestige_global"}}
@@ -33,11 +32,10 @@
 {{else if .User.Globalname}}{{$rawName = .User.Globalname}}{{end}}
 {{$userName := reReplace `([*_~>|\x60])` $rawName `\$1`}}
 
-{{$cooldownData := dbGet .User.ID $keyCD}}
 {{$oldSlips := 0}}{{with (dbGet .User.ID $keySlips)}}{{$oldSlips = toInt .Value}}{{end}}
-{{$userData := sdict "c" 0 "r" 0 "turbo" false}}{{with (dbGet .User.ID $keyData)}}{{$userData = dict .Value | sdict}}{{end}}
+{{$userData := sdict "c" 0 "r" 0 "turbo" false "cd" 0}}{{with (dbGet .User.ID $keyData)}}{{$userData = dict .Value | sdict}}{{end}}
 {{$global := sdict "pity" 0 "oily" false "crash" 0}}{{with (dbGet 0 $keyGlobal)}}{{$global = dict .Value | sdict}}{{end}}
-
+{{$globalChanged := false}}
 {{$prestigeMap := sdict}}
 {{with (dbGet 0 $prestigeGlobal)}}{{$prestigeMap = dict .Value | sdict}}{{end}}
 {{$myPrestige := index $prestigeMap (str .User.ID) | or 0}}
@@ -47,10 +45,9 @@
 {{end}}
 
 {{$topEntries := dbTopEntries $keySlips 100 0}}
-{{$cooldownData := false}}
-{{if and $cooldownData (not $userData.turbo)}}
+{{if and (gt (toInt $userData.cd) (toInt $now.Unix)) (not $userData.turbo)}}
     {{$userName}}, you look around but see no banana peel to slip on!
-    **Try again <t:{{toInt $cooldownData.Value}}:R>!**
+    **Try again <t:{{toInt $userData.cd}}:R>!**
 {{else}}
     {{$currentRank := 101}}{{$myIndex := -1}}{{$prevVal := -1}}{{$rankTracker := 0}}
     {{range $i, $entry := $topEntries}}
@@ -59,12 +56,12 @@
     {{end}}
 
     {{$isCrashActive := gt $global.crash 0}}
-    {{if $isCrashActive}}{{$global.Set "crash" (sub $global.crash 1)}}{{end}}
+    {{if $isCrashActive}}{{$global.Set "crash" (sub $global.crash 1)}}{{$globalChanged = true}}{{end}}
 
     {{$isSlip := eq (randInt 2) 1}}{{if $global.oily}}{{$isSlip = true}}{{$global.Set "oily" false}}{{end}}
 
     {{$addedSlips := 0}}{{$lostSlips := 0}}{{$targetID := 0}}{{$targetSlips := 0}}{{$header := "**Oh no!** 🍌"}}{{$body := ""}}{{$isSwap := false}}{{$isPlosion := false}}
-    {{$isSlip := false}}
+    {{$isSlip := true}}
     {{if $isSlip}}
         {{$luckyChance := $maxLuckyChance}}
         {{if le $currentRank 20}}
@@ -79,7 +76,7 @@
         {{$isLucky := le (randInt 1 10001) (mult $luckyChance 100)}}
         {{$isLucky := true}}
         {{if and $isLucky (not $isCrashActive)}}
-            {{if ge $currentRank 11}}{{$global.Set "pity" 0}}{{end}}
+            {{if ge $currentRank 11}}{{$global.Set "pity" 0}}{{$globalChanged = true}}{{end}}
             {{$tCrash := $oddsMarketCrash}}
             {{$tHalving := add $tCrash $oddsHalving}}
             {{$tSwap := add $tHalving $oddsRankSwap}}
@@ -90,7 +87,7 @@
             {{$tCosmic := add $tMythic $oddsCosmic}}
 
             {{$roll := randInt 1 101}}
-            {{$roll := 3}}
+            {{$roll := 6}}
 
             {{if $wasTurbo}}
                 {{$roll = randInt (add $tOily 1) 101}}
@@ -98,7 +95,7 @@
 
             {{if le $roll $tCrash}}
                 {{$newCrashVal := add $global.crash 3}}
-                {{$global.Set "crash" $newCrashVal}}
+                {{$global.Set "crash" $newCrashVal}}{{$globalChanged = true}}
                 {{$body = printf "\n📉 **MARKET CRASH!** %s caused the economy to collapse! Slips grant 0 and flips grant 5 for the next %d rolls! 🚨" $userName (toInt $newCrashVal)}}
             {{else if le $roll $tHalving}}
                 {{$preHalve := $oldSlips}}
@@ -107,7 +104,7 @@
                 {{$multiplier = 0}}
                 {{$body = printf "\n📉💥 **CATASTROPHIC ERROR!** %s's entire slip count was just **HALVED**!" $userName}}
             {{else if and (le $roll $tSwap) (ge $myIndex 0)}}
-                {{$isSwap = true}}
+                {{$isSwap = true}}{{$multiplier = 0}}
                 {{$offset := randInt 1 6}}
                 {{$targetIdx := 0}}
                 {{if le $currentRank 10}}
@@ -127,7 +124,7 @@
                         {{$body = printf "\n📉 **RANK SWAP!** %s fumbled and swapped places with <@%d> from below! 🤼‍♂️" $userName $targetID}}
                     {{end}}
                 {{else}}
-                    {{$isSwap = false}}{{$multiplier = mult $multiplier 2}}
+                    {{$isSwap = false}}{{$multiplier = 2}}
                     {{$body = printf "\n😮 %s tried to swap, but no one was there! A **Golden Peel** was found instead." $userName}}
                 {{end}}
             {{else if le $roll $tTurbo}}
@@ -144,7 +141,7 @@
                     {{$body = printf "\n💣 **SLIP-PLOSION!** %s sent a shockwave that destroyed 1 slip from <@%d>! 🌋" $userName $targetID}}
                 {{end}}
             {{else if le $roll $tOily}}
-                {{$global.Set "oily" true}}
+                {{$global.Set "oily" true}}{{$globalChanged = true}}
                 {{$body = printf "\n🛢️💀 **OILY FLOOR!** %s spilled grease! The next roller is **DOOMED** to slip." $userName}}
             {{else if le $roll $tMythic}}
                 {{$header = "**HOLY CRAP!** 😱😱😱"}}
@@ -163,7 +160,7 @@
             {{end}}
 
         {{else}}
-            {{$global.Set "pity" (add $global.pity 2)}}
+            {{$global.Set "pity" (add $global.pity 2)}}{{$globalChanged = true}}
             {{if $wasTurbo}}
                 {{$body = printf "\n🏎️💨 **TURBO BONUS!** %s slipped on a regular peel, but was worth **DOUBLE**!" $userName}}
             {{else}}
@@ -208,6 +205,7 @@
         {{- end -}}
     {{end}}
 
-    {{if not $userData.turbo}}{{dbSetExpire .User.ID $keyCD (str (add currentTime.Unix $cooldownDuration)) $cooldownDuration}}{{end}}
-    {{dbSetExpire .User.ID $keyData $userData $expiration}}{{dbSet 0 $keyGlobal $global}}
+    {{if not $userData.turbo}}{{$userData.Set "cd" (add currentTime.Unix $cooldownDuration)}}{{end}}
+    {{dbSetExpire .User.ID $keyData $userData $expiration}}
+    {{if $globalChanged}}{{dbSet 0 $keyGlobal $global}}{{end}}
 {{end}}
