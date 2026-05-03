@@ -41,8 +41,6 @@
 
 
 
-
-
 ------------------------  Just put that in banana itself to remove the db entry, blocks it 6h before end of month
 {{ $now := currentTime }}
 {{ $nextMonth := (printf "%d-%02d-01T00:00:00Z" (int $now.Year) (add (int $now.Month) 1 | slice 0 12) | community.parseTime) }}

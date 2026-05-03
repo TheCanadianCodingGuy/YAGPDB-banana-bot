@@ -26,51 +26,43 @@ Change it to:
 
 ## 1. Core Mechanics & Cooldowns
 
-- [ ] **TC 1.1: Basic Slip**  
+- [X] **TC 1.1: Basic Slip**  
   Action: Roll and get a normal slip (not lucky).  
   Expected: You gain +1 slip. Your streak resets to 0. Pity increases by 2. Cooldown is applied.
 
-- [ ] **TC 1.2: Basic Backflip (New Record)**  
+- [X] **TC 1.2: Basic Backflip (New Record)**  
   Action: Roll and get a backflip. Ensure it's higher than your current record.  
   Expected: You gain 0 slips. Text says "setting a new all-time personal record". Cooldown applied.
 
-- [ ] **TC 1.3: Basic Backflip (Tied Record)**  
+- [X] **TC 1.3: Basic Backflip (Tied Record)**  
   Action: Roll a backflip that matches your exact record.  
   Expected: Text says "pulling even with your all-time personal record." 
 
-- [ ] **TC 1.4: Basic Backflip (Chasing Record)**  
+- [X] **TC 1.4: Basic Backflip (Chasing Record)**  
   Action: Roll a backflip while your streak is lower than your record.  
   Expected: Text says "chasing your all-time personal record." 
 
-- [ ] **TC 1.5: Cooldown Enforcement**  
+- [X] **TC 1.5: Cooldown Enforcement**  
   Action: Try to use the command immediately after rolling (without Turbo active).  
   Expected: Bot blocks the command and displays the "Try again <t:...:R>!" message. No slips or streaks are modified.
 
 ## 2. Global Economy Glitches
 
-- [ ] **TC 2.1: Trigger Market Crash**  
+- [X] **TC 2.1: Trigger Market Crash**  
   Action: Hit a lucky roll between 1-3.  
   Expected: Global crash variable is set to 3. Text displays "MARKET CRASH!". Cooldown applied.
 
-- [ ] **TC 2.2: Market Crash - Slip Interaction**  
+- [X] **TC 2.2: Market Crash - Slip Interaction**  
   Action: Roll a slip while Market Crash is active.  
   Expected: Text displays "MARKET CRASH ACTIVE! Your slip was worthless!". You gain 0 slips (even if you hit a multiplier). Crash counter decays.
 
-- [ ] **TC 2.3: Market Crash - Backflip Interaction**  
+- [X] **TC 2.3: Market Crash - Backflip Interaction**  
   Action: Roll a backflip while Market Crash is active.  
   Expected: Text displays "MARKET CRASH! Stole 5 Slips!". You gain +5 slips. Streak increases. Crash counter decays.
 
-- [ ] **TC 2.4: Market Crash - Expiration**  
+- [X] **TC 2.4: Market Crash - Expiration**  
   Action: Roll 3 times after a crash is triggered.  
   Expected: On the 4th roll, the economy returns to normal, and normal slips/backflips resume.
-
-- [ ] **TC 2.5: Trigger Oily Floor**  
-  Action: Hit a lucky roll between 28-39.  
-  Expected: Text displays "OILY FLOOR!". Global oily variable set to true.
-
-- [ ] **TC 2.6: Consume Oily Floor**  
-  Action: Roll while Oily Floor is active (ideally tested by a second user).  
-  Expected: RNG is bypassed, the user is forced to slip, and the Oily Floor state resets to false.
 
 ## 3. Turbo System
 
@@ -94,23 +86,23 @@ Change it to:
   Expected: User swaps with someone below them. Text says "You fumbled and swapped places... from below." DB updates both users' slips.
 
 - [ ] **TC 4.2: Lower Bracket Swap (Swapping Up)**  
-  Precondition: User is Rank 11+.  
-  Action: Hit a Rank Swap roll (5-9).  
+  Precondition: User is Rank 11+.
+  Action: Hit a Rank Swap roll (5-9).
   Expected: User swaps with someone above them. Text says "You vaulted upwards and stole the position." DB updates both users' slips.
 
-- [ ] **TC 4.3: Swap Boundary Protection (Bottom)**  
-  Precondition: User is in the top 10 but at the very bottom of the leaderboard (no one below them).  
-  Action: Hit a Rank Swap roll.  
+- [ ] **TC 4.3: Swap Boundary Protection (Bottom)**
+  Precondition: User is in the top 10 but at the very bottom of the leaderboard (no one below them).
+  Action: Hit a Rank Swap roll.
   Expected: Target index defaults to the last person. If the target is themselves, the swap fails and they receive a Golden Peel (x2 slips) instead.
 
-- [ ] **TC 4.4: Solo Player Swap (No Target)**  
-  Precondition: The leaderboard is empty except for the testing user.  
-  Action: Hit a Rank Swap roll.  
+- [ ] **TC 4.4: Solo Player Swap (No Target)**
+  Precondition: The leaderboard is empty except for the testing user.
+  Action: Hit a Rank Swap roll.
   Expected: Text says "tried to swap, but no one was there!". User gets a Golden Peel (x2 multiplier) instead.
 
 ## 5. Destructive & Multiplier Glitches
 
-- [ ] **TC 5.1: Halving Glitch**  
+- [X] **TC 5.1: Halving Glitch**  
   Action: Hit a lucky roll of 4.  
   Expected: Text says "CATASTROPHIC ERROR!". User's current slip total is divided by 2 (rounded down).
 
@@ -168,10 +160,10 @@ Change it to:
 
 ## 8. Prestige Display
 
-- [ ] **TC 8.1: Verify Prestige 0 display**  
+- [X] **TC 8.1: Verify Prestige 0 display**  
   Action: Validate the username in flip, slip, topflip, topslip shows correctly, without spaces or prestiqge text wherever the username is displayed.  
   Expected: Username only "Username"
 
-- [ ] **TC 8.2: Verify Prestige 1+ display**  
+- [X] **TC 8.2: Verify Prestige 1+ display**  
   Action: Validate the username in flip, slip, topflip, topslip shows correctly with prestige text wherever the username is displayed.  
   Expected: Username includes "(🏆1+)Username"

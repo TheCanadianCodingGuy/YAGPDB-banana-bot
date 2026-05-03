@@ -1,0 +1,1 @@
+Removes messages that are not commands.
