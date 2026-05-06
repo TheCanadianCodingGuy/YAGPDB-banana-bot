@@ -12,14 +12,14 @@
 
 {{/* Configuration */}}
 {{ $dbKey := "TEST_banana_slips" }}
-{{ $prestigeGlobal := "TEST_prestige_global" }}
-{{ $keyGlobal := "TEST_banana_global" }}
+{{ $pg := "TEST_prestige_global" }}
+{{ $kg := "TEST_banana_global" }}
 {{ $limit := 10 }}
 {{ $fetchAmount := 25 }}
 
 {{/* 1. Season & Global Data Fetch */}}
-{{ $global := sdict "season" 1 }}{{ with (dbGet 0 $keyGlobal) }}{{ $global = dict .Value | sdict }}{{ end }}
-{{ $prestigeMap := sdict }}{{ with (dbGet 0 $prestigeGlobal) }}{{ $prestigeMap = dict .Value | sdict }}{{ end }}
+{{ $global := sdict "season" 1 }}{{ with (dbGet 0 $kg) }}{{ $global = dict .Value | sdict }}{{ end }}
+{{ $prestigeMap := sdict }}{{ with (dbGet 0 $pg) }}{{ $prestigeMap = dict .Value | sdict }}{{ end }}
 
 {{/* 2. Dynamic Time Calculation */}}
 {{/* Start of Month: Current Year-Month-01 00:00:00 */}}

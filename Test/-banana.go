@@ -1,10 +1,10 @@
 {{/* --- CONFIGURATION --- */}}
-{{ $keySlips := "TEST_banana_slips" }}
+{{ $ks := "TEST_banana_slips" }}
 {{ $keyCD := "TEST_banana_cooldown" }}
 {{ $keyCurrentStreak := "TEST_banana_current_backflip" }}
 {{ $keyRecordStreak := "TEST_banana_record_backflip" }}
-{{ $cooldownDuration := 36000 }} {{/* 10 Hours */}}
-{{ $expiration := 31536000 }} {{/* 12 Months */}}
+{{ $cdd := 36000 }} {{/* 10 Hours */}}
+{{ $ex := 31536000 }} {{/* 12 Months */}}
 
 {{/* --- USER IDENTITY --- */}}
 {{ $rawName := .User.Username }}
@@ -23,13 +23,13 @@
     **Try again <t:{{ toInt $cooldownData.Value }}:R>!**
 {{ else }}
     {{/* Pre-fetch current user data from the database */}}
-    {{ $oldSlips := 0 }}{{ with (dbGet .User.ID $keySlips) }}{{ $oldSlips = toInt .Value }}{{ end }}
+    {{ $oldSlips := 0 }}{{ with (dbGet .User.ID $ks) }}{{ $oldSlips = toInt .Value }}{{ end }}
     {{ $oldRecord := 0 }}{{ with (dbGet .User.ID $keyRecordStreak) }}{{ $oldRecord = toInt .Value }}{{ end }}
     {{ $oldStreak := 0 }}{{ with (dbGet .User.ID $keyCurrentStreak) }}{{ $oldStreak = toInt .Value }}{{ end }}
 
     {{/* INITIAL RANK CHECK: Determine where they stand before the roll */}}
     {{ $currentRank := 101 }}{{ $prevVal := -1 }}{{ $rankTracker := 0 }}{{ $found := false }}
-    {{ range $i, $entry := dbTopEntries $keySlips 100 0 }} {{/* Pull top 100 to find user's position */}}
+    {{ range $i, $entry := dbTopEntries $ks 100 0 }} {{/* Pull top 100 to find user's position */}}
         {{ if not $found }}
             {{ $val := toInt .Value }}
             {{ if ne $val $prevVal }}{{ $rankTracker = add $i 1 }}{{ end }} {{/* Handle tie logic */}}
@@ -39,8 +39,8 @@
     {{ end }}
 
     {{/* Set the 10-hour cooldown immediately */}}
-    {{ $expiresAt := add currentTime.Unix $cooldownDuration }}
-    {{ dbSetExpire .User.ID $keyCD (str $expiresAt) $cooldownDuration }}
+    {{ $expiresAt := add currentTime.Unix $cdd }}
+    {{ dbSetExpire .User.ID $keyCD (str $expiresAt) $cdd }}
 
     {{/* --- THE FLIP (50% Chance to Slip or Backflip) --- */}}
     {{ if eq (randInt 2) 1 }}
@@ -80,13 +80,13 @@
         {{ $newSlips := add $oldSlips $addedSlips }}
         
         {{/* Update all database keys and refresh expiration */}}
-        {{ dbSetExpire .User.ID $keySlips (str $newSlips) $expiration }}
-        {{ dbSetExpire .User.ID $keyCurrentStreak "0" $expiration }}
-        {{ dbSetExpire .User.ID $keyRecordStreak (str $oldRecord) $expiration }}
+        {{ dbSetExpire .User.ID $ks (str $newSlips) $ex }}
+        {{ dbSetExpire .User.ID $keyCurrentStreak "0" $ex }}
+        {{ dbSetExpire .User.ID $keyRecordStreak (str $oldRecord) $ex }}
 
         {{/* POST-SLIP RANK CHECK: See where they landed after the chaos */}}
         {{ $finalRank := "100+" }}{{ $prevVal = -1 }}{{ $rankTracker = 0 }}{{ $found = false }}
-        {{ range $i, $entry := dbTopEntries $keySlips 100 0 }}
+        {{ range $i, $entry := dbTopEntries $ks 100 0 }}
             {{ if not $found }}
                 {{ $val := toInt .Value }}
                 {{ if ne $val $prevVal }}{{ $rankTracker = add $i 1 }}{{ end }}
@@ -135,9 +135,9 @@
         {{ end }}
 
         {{/* Update all keys and reset expiries (3 calls) */}}
-        {{ dbSetExpire .User.ID $keyCurrentStreak (str $newStreak) $expiration }}
-        {{ dbSetExpire .User.ID $keyRecordStreak (str $newRecord) $expiration }}
-        {{ dbSetExpire .User.ID $keySlips (str $oldSlips) $expiration }}
+        {{ dbSetExpire .User.ID $keyCurrentStreak (str $newStreak) $ex }}
+        {{ dbSetExpire .User.ID $keyRecordStreak (str $newRecord) $ex }}
+        {{ dbSetExpire .User.ID $ks (str $oldSlips) $ex }}
 
         [TEST] **CLEAN!** 🤸
         {{ $userName }} dodged the peel with a backflip! 

@@ -11,8 +11,8 @@
 7) make new channel only respond to commands and erase other messages.
 8) Create purge with new data for cron tab.
 9) prestige leaderboard
-
-
+x) User purge from inactivity updated with new data.
+10) try to see if I can implement stats tracking.... 
 
 
 ------------------script erase messages (custom command regex trigger .*)
@@ -126,8 +126,8 @@
 
 ----------------------- example add prestige
 {{/* Configuration */}}
-{{ $keyGlobal := "TEST_prestige_global" }}
-{{ $expiration := 31536000 }}
+{{ $kg := "TEST_prestige_global" }}
+{{ $ex := 31536000 }}
 
 {{/* 1. Define the Batch Data (UserID: Increment) */}}
 {{ $updates := sdict 
@@ -138,7 +138,7 @@
 
 {{/* 2. Fetch the existing Global Map */}}
 {{ $prestigeMap := sdict }}
-{{ with (dbGet 0 $keyGlobal) }}
+{{ with (dbGet 0 $kg) }}
     {{ $prestigeMap = dict .Value | sdict }}
 {{ end }}
 
@@ -149,7 +149,7 @@
 {{ end }}
 
 {{/* 4. Save the updated map */}}
-{{ dbSet 0 $keyGlobal $prestigeMap }}
+{{ dbSet 0 $kg $prestigeMap }}
 
 ✅ **Batch update complete!**
 {{ range $id, $inc := $updates }}

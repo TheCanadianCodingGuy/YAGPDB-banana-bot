@@ -1,3 +1,14 @@
+$roll := 1 		  // Crash ✅
+$roll := 4      // Halving ✅
+$roll := 6      // Rank Swap ✅
+$roll := 10     // Turbo ✅
+$roll := 20     // Slip-splosion ✅
+$roll := 30     // Oily
+$roll := 43     // Mythic
+$roll := 46     // Cosmic
+$roll := 100    // Golden
+
+
 # Banana Slip Test Suite
 
 This is a comprehensive manual test suite for your script, formatted as a Markdown checklist.

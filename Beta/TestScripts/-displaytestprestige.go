@@ -1,6 +1,6 @@
-{{ $keyGlobal := "TEST_prestige_global" }}
+{{ $kg := "TEST_prestige_global" }}
 {{ $prestigeMap := sdict }}
-{{ with (dbGet 0 $keyGlobal) }}
+{{ with (dbGet 0 $kg) }}
     {{ $prestigeMap = dict .Value | sdict }}
 {{ end }}
 
