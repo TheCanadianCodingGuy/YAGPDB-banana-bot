@@ -124,12 +124,12 @@
                 {{$slipType = "ss"}}
                 {{$isPlosion = true}}
                 {{if eq $currentRank 1}}
-                    {{$addedSlips = -2}}{{$multiplier = 0}}
-                    {{$body = printf "\n💣 **SLIPSPLOSION!** %s hit the floor so hard they destroyed 2 of their own slips! 🌋" $userName}}
+                    {{$addedSlips = -3}}{{$multiplier = 0}}
+                    {{$body = printf "\n💣 **SLIPSPLOSION!** %s hit the floor so hard they destroyed 3 of their own slips! 🌋" $userName}}
                 {{else if gt $myIndex 0}}
                     {{$target := index $te (sub $myIndex 1)}}
-                    {{$targetID = $target.User.ID}}{{$targetSlips = sub (toInt $target.Value) 2}}
-                    {{$body = printf "\n💣 **SLIPSPLOSION!** %s sent a shockwave that destroyed 2 slips from <@%d>! 🌋" $userName $targetID}}
+                    {{$targetID = $target.User.ID}}{{$targetSlips = sub (toInt $target.Value) 3}}
+                    {{$body = printf "\n💣 **SLIPSPLOSION!** %s sent a shockwave that destroyed 3 slips from <@%d>! 🌋" $userName $targetID}}
                 {{end}}
             {{else if le $roll $tOily}}
                 {{$slipType = "os"}}
