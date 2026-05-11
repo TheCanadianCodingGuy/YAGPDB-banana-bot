@@ -1,1 +1,0 @@
-List here the commands from the bot the user can use, with a short description of what they do.
