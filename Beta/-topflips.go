@@ -1,1 +1,1 @@
-😪 topflips has been decomissioned, flips will serve another purpose in a future season!
+😪 -topflips has been decomissioned. Flips will serve another purpose in a future season!

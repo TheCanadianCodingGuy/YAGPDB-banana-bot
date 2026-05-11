@@ -10,22 +10,17 @@
     {{ return }}
 {{ end }}
 
-{{/* Configuration */}}
 {{ $dbKey := "TEST_banana_slips" }}
 {{ $pg := "TEST_prestige_global" }}
 {{ $kg := "TEST_banana_global" }}
 {{ $limit := 10 }}
 {{ $fetchAmount := 25 }}
 
-{{/* 1. Season & Global Data Fetch */}}
 {{ $global := sdict "season" 1 }}{{ with (dbGet 0 $kg) }}{{ $global = dict .Value | sdict }}{{ end }}
 {{ $prestigeMap := sdict }}{{ with (dbGet 0 $pg) }}{{ $prestigeMap = dict .Value | sdict }}{{ end }}
 
-{{/* 2. Dynamic Time Calculation */}}
-{{/* Start of Month: Current Year-Month-01 00:00:00 */}}
 {{ $startOfMonth := (newDate currentTime.Year (toInt currentTime.Month) 1 0 0 0) }}
 
-{{/* End of Month: (Start of Month + 1 Month) - 6 Hours */}}
 {{ $nextMonth := (add $startOfMonth.Month 1) }}
 {{ $nextYear := $startOfMonth.Year }}
 {{ if gt $nextMonth 12 }}{{ $nextMonth = 1 }}{{ $nextYear = add $nextYear 1 }}{{ end }}
@@ -37,9 +32,9 @@
     [TEST] 🍌 **The floors are clean!** No one has slipped on a banana peel yet.
 {{ else }}
     ### 🏆 Banana Season {{ $global.season }} Hall of Shame (Top 10)
-    **Starts:** <t:{{ $startOfMonth.Unix }}:F>
-    **Ends:** <t:{{ $endOfSeason.Unix }}:F> (<t:{{ $endOfSeason.Unix }}:R>)
-{{- "\n\u200b\n" -}}
+    **Started on:** <t:{{ $startOfMonth.Unix }}:F>
+    **Ends on:** <t:{{ $endOfSeason.Unix }}:F> (<t:{{ $endOfSeason.Unix }}:R>)
+{{- "\n\u200b" -}}
 {{- $displayCount := 0 -}}
 {{- $prevValue := -1 -}}
 {{- $rank := 0 -}}
@@ -69,9 +64,6 @@
     {{- end -}}
 {{- end }}
 
-*⚠️ Floor slippery when banana.*
-
-{{- /* 4. Calling User's Personal Stats */ -}}
 {{- $myRank := "Unranked" -}}
 {{- $mySlips := 0 -}}
 {{- with (dbGet .User.ID $dbKey) }}{{ $mySlips = toInt .Value }}{{ end -}}
@@ -88,7 +80,6 @@
     {{- end -}}
 {{- end -}}
 
-{{- /* 5. Final Personalized Footer */ -}}
 {{- $myPrestige := index $prestigeMap (str .User.ID) | or 0 -}}
 {{- $myDisplayName := .User.Username -}}
 {{- if .Member.Nick }}{{ $myDisplayName = .Member.Nick -}}
@@ -101,3 +92,4 @@
 
 **{{ $myDisplayName }}** is currently at rank **#{{ $myRank }}** with **{{ $mySlips }}** slip{{ if ne $mySlips 1 }}s{{ end }}.
 {{ end }}
+*⚠️ Floor slippery when banana.*

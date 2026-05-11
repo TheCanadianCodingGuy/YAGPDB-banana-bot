@@ -1,58 +1,16 @@
-1) Test -banana (spliplosion calls db too many times)
-   - Test if all work correctly
-   - Test if right number of slips for each.
-   - Test messages, make sure it looks nice enough and descriptive
+3) Update sanitize users for new season
+4) Point tally cron script, taking top 3, and giving prestige points to users. reset TEST_banana_global data and +1 season. Announce winners and season freeze. For the prestige. Get top 3, but assign points if like 2 people are first, they both get 3 points, if more that 3 are first, they all get 3 points. if 2 are first, and 3 are second, all 3 seconds get 2 points, etc. etc.
+5) Season start announcement cron script. 
+6) Create purge users for users leaving the server.
+7) Create prestige leaderboard
+8) Create purge for end of season
+9) create command list script
+10) A what command explaining the bot and events.
+11) Create script to delete messages automatically that is not bot or allowed commands.
 
-2) Create Prestige award and store script + reset TEST_banana_global data and +1 season
-3) Create purge with old data for cron tab + reset TEST_banana_global data and +1 season
-4) make new command -banana (responds to new channel)
-5) cron job to announce new season start.
-6) make -banana obselete in general, new message to go to the enw channel and use it there
-7) make new channel only respond to commands and erase other messages.
-8) Create purge with new data for cron tab.
-9) prestige leaderboard
-x) User purge from inactivity updated with new data.
-10) try to see if I can implement stats tracking.... 
-
-
-------------------script erase messages (custom command regex trigger .*)
-{{/* 1. Check if the message starts with the dash */}}
-{{if hasPrefix .Message.Content "-"}}
-    
-    {{/* 2. Strip the dash and get only the first word (the command) */}}
-    {{$args := split (slice .Message.Content 1) " "}}
-    {{$cmd := lower (index $args 0)}}
-
-    {{/* 3. Check if that word is in our allowed list */}}
-    {{range $allowed}}
-        {{if eq $cmd .}}
-            {{$isValid = true}}
-        {{end}}
-    {{end}}
-{{end}}
-
-{{/* 4. If it's not a valid command, delete it */}}
-{{if not $isValid}}
-    {{deleteTrigger 0}}
-{{end}}
-
-
-
-
-
-
-------------------------  Just put that in banana itself to remove the db entry, blocks it 6h before end of month
-{{ $now := currentTime }}
-{{ $nextMonth := (printf "%d-%02d-01T00:00:00Z" (int $now.Year) (add (int $now.Month) 1 | slice 0 12) | community.parseTime) }}
-{{ if (int $now.Month) == 12 }}{{ $nextMonth = (printf "%d-01-01T00:00:00Z" (add $now.Year 1) | community.parseTime) }}{{ end }}
-
-{{ if $now.After ($nextMonth.Add ( community.parseDuration "-6h" )) }}
-    {{ sendMessage nil "⚠️ **Season Over!** Command locked for tallying. Results in 6 hours!" }}
-    {{ return }}
-{{ end }}
-
-
-
+Transfer from beta to live TODO:
+1) make -banana obselete in general, new message to go to the enw channel and use it there
+2) ???
 
 
 -------------------- prestige points example (CRON: 30 18 28-31 * *)
