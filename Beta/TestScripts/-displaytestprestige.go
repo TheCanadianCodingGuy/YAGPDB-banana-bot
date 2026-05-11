@@ -9,9 +9,18 @@
     Registry is currently empty.
 {{ else }}
     {{ range $id, $points := $prestigeMap }}
-        {{/* Use 'or' to handle nil/zero values */}}
         {{ $displayPoints := or $points 0 }}
-        - **User ID:** `{{ $id }}` | **Prestige:** `{{ $displayPoints }}`
+        
+        {{/* Fetch user info. Note: This can be heavy on large lists */}}
+        {{ $user := userArg $id }}
+        {{ $name := (printf "Unknown (%s)" $id) }}
+        
+        {{ if $user }}
+            {{ $name = $user.Username }}
+            {{ if $user.Globalname }}{{ $name = $user.Globalname }}{{ end }}
+        {{ end }}
+
+        - **{{ $name }}**: `{{ $displayPoints }}` Prestige
     {{ end }}
 {{ end }}
 

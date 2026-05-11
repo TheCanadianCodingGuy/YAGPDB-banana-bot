@@ -1,1 +1,0 @@
-Calculate prestige, award points, tell channel about them then update season to new. adds flag in db to purge.
