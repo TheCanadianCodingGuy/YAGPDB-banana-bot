@@ -1,5 +1,3 @@
-1) Create prestige leaderboard
-2) A what command explaining the bot and events.
 3) create command list script
 4) Create script to delete messages automatically that is not bot or allowed commands.
 
