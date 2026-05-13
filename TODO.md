@@ -1,4 +1,8 @@
 1) Test Cron jobs scripts (fake end of season from Dev-CronTest folder and make it end season)
+a) Test multiple same purge scripts and give sleep in them to separate execution time since it is only each 15 minutes, not each minute.
+b) make 15 scripts for purge with a 60 sec sleep each except first one.
+c) redo crons for 12 hours instead of 6
+d) redo scripts ifs for 12 hours, not 6 (end of season)
 2) Migrate scripts from Dev-RealDates into Beta
 3) For Beta:
 a) Remove restrictions

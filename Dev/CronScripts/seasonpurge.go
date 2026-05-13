@@ -1,4 +1,5 @@
-{{/* --- CRON: * 18-23 28-31 * * --- */}}
+{{/* --- CRON: */15 18-23 15 5 * --- */}}
+{{ sleep 1 }}
 {{ $now := currentTime }}
 
 {{/* 1. Date Check */}}
@@ -12,7 +13,7 @@
 {{ if lt $totalMinutes 1125 }}{{ return }}{{ end }}
 
 {{/* 3. Circuit Breaker: If season is already flagged as prepared, stop */}}
-{{if (dbGet 0 "season_start_flag")}}{{return}}{{end}}
+{{if (dbGet 0 "TEST_season_start_flag")}}{{return}}{{end}}
 
 {{/* 4. Identify 1 user to purge */}}
 {{$entries := dbTopEntries "TEST_banana_slips" 1 0}}
