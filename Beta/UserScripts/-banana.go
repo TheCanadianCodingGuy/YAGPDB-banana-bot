@@ -14,16 +14,16 @@
 {{$keyGlobal := "BETA_banana_global"}}
 {{$prestigeGlobal := "BETA_prestige_global"}}
 {{$cooldownDuration := 7200}}
-{{$milc := 5}}
-{{$malc := 45}}
-{{$oMarketCrash := 3}}
-{{$oHalving := 1}}
-{{$oRankSwap := 5}}
-{{$oTurbo := 8}}
-{{$oPlosion := 10}}
-{{$oOily := 12}}
-{{$oMythic := 3}}
-{{$oCosmic := 9}}
+{{$milc := 15}}
+{{$malc := 75}}
+{{$oMarketCrash := 6}}
+{{$oHalving := 4}}
+{{$oRankSwap := 8}}
+{{$oTurbo := 11}}
+{{$oPlosion := 13}}
+{{$oOily := 15}}
+{{$oMythic := 6}}
+{{$oCosmic := 12}}
 {{$rawName := .User.Username}}
 {{if .Member.Nick}}{{$rawName = .Member.Nick}}
 {{else if .User.Globalname}}{{$rawName = .User.Globalname}}{{end}}
@@ -39,7 +39,7 @@
 {{end}}
 {{$te := dbTopEntries $ks 100 0}}
 {{if and (gt (toInt $userData.cd) (toInt $now.Unix)) (not $userData.turbo)}}
-    [BETA] {{$userName}}, you look around but see no banana peel to slip on!
+    [BETA] {{$userName}}, you look around but see no banana peel to slip on! How sad!
     **Try again <t:{{toInt $userData.cd}}:R>!**
 {{else}}
     {{$currentRank := 101}}{{$myIndex := -1}}{{$prevVal := -1}}{{$rankTracker := 0}}
@@ -58,12 +58,12 @@
             {{$range := sub $malc $milc}}
             {{$luckyChance = add $milc (div (mult (sub $currentRank 1) $range) 19)}}
         {{end}}
-        {{if ge $currentRank 11}}{{$luckyChance = add $luckyChance $global.pity}}{{end}}
+        {{if ge $currentRank 5}}{{$luckyChance = add $luckyChance $global.pity}}{{end}}
         {{$wasTurbo := $userData.turbo}}
         {{$multiplier := 1}}{{if $wasTurbo}}{{$multiplier = 2}}{{$userData.Set "turbo" false}}{{end}}
         {{$isLucky := le (randInt 1 10001) (mult $luckyChance 100)}}
         {{if and $isLucky (not $isCrashActive)}}
-            {{if ge $currentRank 11}}{{$global.Set "pity" 0}}{{$gc = true}}{{end}}
+            {{if ge $currentRank 5}}{{$global.Set "pity" 0}}{{$gc = true}}{{end}}
             {{$tCrash := $oMarketCrash}}
             {{$tHalving := add $tCrash $oHalving}}
             {{$tSwap := add $tHalving $oRankSwap}}
@@ -80,14 +80,14 @@
                 {{$slipType = "mcs"}}
                 {{$newCrashVal := add $global.crash 3}}
                 {{$global.Set "crash" $newCrashVal}}{{$gc = true}}
-                {{$body = printf "\n📉 **MARKET CRASH!** %s caused the economy to collapse! Slips grant 0 and flips grant 5 for the next %d rolls! 🚨" $userName (toInt $newCrashVal)}}
+                {{$body = printf "📉 **MARKET CRASH!** %s caused the economy to collapse! Slips grant 0 and flips grant 5 for the next %d rolls! 🚨" $userName (toInt $newCrashVal)}}
             {{else if le $roll $tHalving}}
                 {{$slipType = "hs"}}
                 {{$preHalve := $oldSlips}}
                 {{$oldSlips = div $oldSlips 2}}
                 {{$addedSlips = sub $oldSlips $preHalve}}
                 {{$multiplier = 0}}
-                {{$body = printf "\n📉💥 **BIG RIP!** %s's entire slip count was just **HALVED**!" $userName}}
+                {{$body = printf "📉💥 **BIG RIP!** %s's entire slip count was just **HALVED**!" $userName}}
             {{else if and (le $roll $tSwap) (ge $myIndex 0)}}
                 {{$isSwap = true}}{{$multiplier = 0}}
                 {{$offset := randInt 1 6}}
@@ -105,57 +105,57 @@
                     {{$targetID = $target.User.ID}}{{$targetSlips = toInt $target.Value}}
                     {{$addedSlips = sub $targetSlips $oldSlips}}
                     {{if lt $targetIdx $myIndex}}
-                        {{$body = printf "\n🚀 **RANK SWAP!** %s vaulted upwards and swapped their **%d** slips with <@%d>'s **%d** slips! 🏎️💨" $userName $oldSlips $targetID $targetSlips}}
+                        {{$body = printf "🚀 **RANK SWAP!** %s vaulted upwards and swapped their **%d** slips with <@%d>'s **%d** slips! 🏎️💨" $userName $oldSlips $targetID $targetSlips}}
                     {{else}}
-                        {{$body = printf "\n📉 **RANK SWAP!** %s fumbled and swapped their **%d** slips with <@%d>'s **%d** slips from below! 🤼‍♂️" $userName $oldSlips $targetID $targetSlips}}
+                        {{$body = printf "📉 **RANK SWAP!** %s fumbled and swapped their **%d** slips with <@%d>'s **%d** slips from below! 🤼‍♂️" $userName $oldSlips $targetID $targetSlips}}
                     {{end}}
                 {{else}}
                     {{$slipType = "gs"}}
                     {{$isSwap = false}}{{$multiplier = 2}}
-                    {{$body = printf "\n😮 %s tried to swap, but no one was there! A **Golden Peel** was found instead." $userName}}
+                    {{$body = printf "😮 %s tried to swap, but no one was there! A **Golden Peel** was found instead." $userName}}
                 {{end}}
             {{else if le $roll $tTurbo}}
                 {{$slipType = "ts"}}
                 {{$userData.Set "turbo" true}}
-                {{$body = printf "\n🔥 **TURBO OVERDRIVE!** %s hit top speeds! Cooldown is reset and next slip is worth **DOUBLE**! 🏎️💨" $userName}}
+                {{$body = printf "🔥 **TURBO OVERDRIVE!** %s hit top speeds! Cooldown is reset and next slip is worth **DOUBLE**! 🏎️💨" $userName}}
             {{else if le $roll $tPlosion}}
                 {{$slipType = "ss"}}
                 {{$isPlosion = true}}
                 {{if eq $currentRank 1}}
                     {{$addedSlips = -3}}{{$multiplier = 0}}
-                    {{$body = printf "\n💣 **SLIPSPLOSION!** %s hit the floor so hard they destroyed 3 of their own slips! 🌋" $userName}}
+                    {{$body = printf "💣 **SLIPSPLOSION!** %s hit the floor so hard they destroyed 3 of their own slips! 🌋" $userName}}
                 {{else if gt $myIndex 0}}
                     {{$target := index $te (sub $myIndex 1)}}
                     {{$targetID = $target.User.ID}}{{$targetSlips = sub (toInt $target.Value) 3}}
-                    {{$body = printf "\n💣 **SLIPSPLOSION!** %s sent a shockwave that destroyed 3 slips from <@%d>! 🌋" $userName $targetID}}
+                    {{$body = printf "💣 **SLIPSPLOSION!** %s sent a shockwave that destroyed 3 slips from <@%d>! 🌋" $userName $targetID}}
                 {{end}}
             {{else if le $roll $tOily}}
                 {{$slipType = "os"}}
                 {{$global.Set "oily" true}}{{$gc = true}}
-                {{$body = printf "\n🛢️💀 **OILY FLOOR!** %s spilled grease! The next roller is **DOOMED** to slip." $userName}}
+                {{$body = printf "🛢️💀 **OILY FLOOR!** %s spilled grease! The next roller is **DOOMED** to slip." $userName}}
             {{else if le $roll $tMythic}}
                 {{$slipType = "ms"}}
                 {{$header = "**HOLY CRAP!** 😱😱😱"}}
                 {{$multiplier = mult $multiplier 10}}
-                {{$body = printf "\n🎆🎆🎆 ***%s JUST SLIPPED ON A DANG MYTHIC PEEL WORTH %d SLIPS!*** 🎆🎆🎆" $userName $multiplier}}
+                {{$body = printf "🎆🎆🎆 ***%s JUST SLIPPED ON A DANG MYTHIC PEEL WORTH %d SLIPS!*** 🎆🎆🎆" $userName $multiplier}}
             {{else if le $roll $tCosmic}}
                 {{$slipType = "cs"}}
                 {{$multiplier = mult $multiplier 5}}
-                {{$body = printf "\n🌟🌌🌟 %s just slipped on a rare ***cosmic peel*** worth ***%d slips!*** 🌟🌌🌟" $userName $multiplier}}
+                {{$body = printf "🌟🌌🌟 %s just slipped on a rare ***cosmic peel*** worth ***%d slips!*** 🌟🌌🌟" $userName $multiplier}}
             {{else}}
                 {{$slipType = "gs"}}
                 {{$multiplier = mult $multiplier 2}}
-                {{$body = printf "\n😮 %s just slipped on a peel made of **pure gold** worth **%d slips!**" $userName $multiplier}}
+                {{$body = printf "😮 %s just slipped on a peel made of **pure gold** worth **%d slips!**" $userName $multiplier}}
             {{end}}
             {{if $wasTurbo}}
                 {{$body = printf "%s\n🏎️💨 **TURBO BONUS!** %s's slip was worth **DOUBLE**!" $body $userName}}
             {{end}}
         {{else}}
-            {{$global.Set "pity" (add $global.pity 2)}}{{$gc = true}}
+            {{$global.Set "pity" (add $global.pity 5)}}{{$gc = true}}
             {{if $wasTurbo}}
-                {{$body = printf "\n🏎️💨 **TURBO BONUS!** %s slipped on a regular peel, but was worth **DOUBLE**!" $userName}}
+                {{$body = printf "🏎️💨 **TURBO BONUS!** %s slipped on a regular peel, but was worth **DOUBLE**!" $userName}}
             {{else}}
-                {{$body = printf "\n%s just slipped on a peel!" $userName}}
+                {{$body = printf "   %s just slipped on a peel!" $userName}}
             {{end}}
         {{end}}
         {{if $isCrashActive}}{{$addedSlips = 0}}{{$body = printf "\n🚨 **MARKET CRASH ACTIVE!** %s's slip was worthless! +0 Slips. (%d market crash rolls remaining)" $userName (toInt $global.crash)}}
@@ -168,14 +168,14 @@
         {{$finalRank := 1}}{{range $te}}{{if gt (toInt .Value) $newSlips}}{{$finalRank = add $finalRank 1}}{{end}}{{end}}
         [BETA] {{$header}}
         {{$body}}
-        {{$userName}} just **{{if lt (toInt $addedSlips) 0}}lost {{mult (toInt $addedSlips) -1}}{{else}}gained {{toInt $addedSlips}}{{end}} slip{{if or (gt (toInt $addedSlips) 1) (lt (toInt $addedSlips) -1)}}s{{end}}** for a new total of **{{$newSlips}}** slips! Watch your step!
-        Their clumsiness places them at rank **#{{$finalRank}}**!
+        You just **{{if lt (toInt $addedSlips) 0}}lost {{mult (toInt $addedSlips) -1}}{{else}}gained {{toInt $addedSlips}}{{end}} slip{{if or (gt (toInt $addedSlips) 1) (lt (toInt $addedSlips) -1)}}s{{end}}** for a new total of **{{$newSlips}}** slips! Watch your step!
+        Your clumsiness places you at rank **#{{$finalRank}}**!
     {{else}}
         {{$earnedSlips := 0}}{{if $isCrashActive}}{{$earnedSlips = 5}}{{end}}
         {{$newStreak := add $userData.c 1}}{{$userData.Set "c" $newStreak}}
         {{$userData.Set "f" (add (toInt ($userData.Get "flip")) 1)}}
-        {{$streakStatus := "chasing their"}}{{if gt $newStreak $userData.r}}{{$streakStatus = "setting a new"}}{{$userData.Set "r" $newStreak}}
-        {{else if eq $newStreak $userData.r}}{{$streakStatus = "pulling even with their"}}{{end}}
+        {{$streakStatus := "chasing your"}}{{if gt $newStreak $userData.r}}{{$streakStatus = "setting a new"}}{{$userData.Set "r" $newStreak}}
+        {{else if eq $newStreak $userData.r}}{{$streakStatus = "pulling even with your"}}{{end}}
         {{$turboWaste := ""}}
         {{if $userData.turbo}}
             {{$userData.Set "turbo" false}}
@@ -183,7 +183,7 @@
         {{end}}
         [BETA] **CLEAN!** 🤸
         {{$userName}} dodged the peel with a backflip!
-        They’ve now evaded gravity **{{ $newStreak }}** time{{ if ne $newStreak 1 }}s in a row{{ end }},
+        You’ve now evaded gravity **{{ $newStreak }}** time{{ if ne $newStreak 1 }}s in a row{{ end }},
         {{ $streakStatus }} all-time personal record of **{{ $userData.r }}**.
         {{$turboWaste}}
         {{- if $isCrashActive -}}
