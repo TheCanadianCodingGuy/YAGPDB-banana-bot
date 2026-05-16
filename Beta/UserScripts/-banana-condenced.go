@@ -4,33 +4,33 @@
 {{$ssu := $ss.Unix}}
 {{$lsu := sub $ssu 21600}}
 {{if ge (toInt $now.Unix) (toInt $lsu)}}
-🚫 **The season has ended!**
-Tallying is currently underway and preparations for the new season are in progress.
-**Next season starts at:** <t:{{$ssu}}:F> (<t:{{$ssu}}:R>)
-{{return}}
+    🚫 **The season has ended!**
+	Tallying is currently underway and preparations for the new season are in progress.
+    **Next season starts at:** <t:{{$ssu}}:F> (<t:{{$ssu}}:R>)
+    {{return}}
 {{end}}
-{{$ks := "TEST_banana_slips"}}
-{{$keyData := "TEST_banana_data"}}
-{{$keyGlobal := "TEST_banana_global"}}
-{{$prestigeGlobal := "TEST_prestige_global"}}
-{{$cooldownDuration := 21600}}
-{{$minLuckyChance := 5}}
-{{$maxLuckyChance := 45}}
-{{$oddsMarketCrash := 3}}
-{{$oddsHalving := 1}}
-{{$oddsRankSwap := 5}}
-{{$oddsTurbo := 8}}
-{{$oddsPlosion := 10}}
-{{$oddsOily := 12}}
-{{$oddsMythic := 3}}
-{{$oddsCosmic := 9}}
+{{$ks := "BETA_banana_slips"}}
+{{$keyData := "BETA_banana_data"}}
+{{$keyGlobal := "BETA_banana_global"}}
+{{$prestigeGlobal := "BETA_prestige_global"}}
+{{$cdr := 7200}}
+{{$milc := 5}}
+{{$malc := 45}}
+{{$oMarketCrash := 3}}
+{{$oHalving := 1}}
+{{$oRankSwap := 5}}
+{{$oTurbo := 8}}
+{{$oPlosion := 10}}
+{{$oOily := 12}}
+{{$oMythic := 3}}
+{{$oCosmic := 9}}
 {{$rawName := .User.Username}}
 {{if .Member.Nick}}{{$rawName = .Member.Nick}}
 {{else if .User.Globalname}}{{$rawName = .User.Globalname}}{{end}}
 {{$userName := reReplace `([*_~>|\x60])` $rawName `\$1`}}
 {{$oldSlips := 0}}{{with (dbGet .User.ID $ks)}}{{$oldSlips = toInt .Value}}{{end}}
 {{$userData := sdict "c" 0 "r" 0 "turbo" false "cd" 0 "mcs" 0 "hs" 0 "rss" 0 "gs" 0 "ts" 0 "ss" 0 "os" 0 "ms" 0 "cs" 0 "ns" 0 "f" 0}}{{with (dbGet .User.ID $keyData)}}{{$userData = dict .Value | sdict}}{{end}}
-{{$global := sdict "pity" 0 "oily" false "crash" 0}}{{with (dbGet 0 $keyGlobal)}}{{$global = dict .Value | sdict}}{{end}}
+{{$global := sdict "pity" 0 "oily" false "crash" 0 "season" 0}}{{with (dbGet 0 $keyGlobal)}}{{$global = dict .Value | sdict}}{{end}}
 {{$gc := false}}
 {{$prestigeMap := sdict}}{{with (dbGet 0 $prestigeGlobal)}}{{$prestigeMap = dict .Value | sdict}}{{end}}
 {{$myPrestige := index $prestigeMap (str .User.ID) | or 0}}
@@ -38,10 +38,9 @@ Tallying is currently underway and preparations for the new season are in progre
 {{$userName = printf "(🏆%d) %s" (toInt $myPrestige) $userName}}
 {{end}}
 {{$te := dbTopEntries $ks 100 0}}
-{{$userData.Set "cd" (sub $now.Unix 5)}}
 {{if and (gt (toInt $userData.cd) (toInt $now.Unix)) (not $userData.turbo)}}
-{{$userName}}, you look around but see no banana peel to slip on!
-**Try again <t:{{toInt $userData.cd}}:R>!**
+    [BETA] {{$userName}}, you look around but see no banana peel to slip on!
+    **Try again <t:{{toInt $userData.cd}}:R>!**
 {{else}}
 {{$currentRank := 101}}{{$myIndex := -1}}{{$prevVal := -1}}{{$rankTracker := 0}}
 {{range $i, $entry := $te}}
@@ -53,12 +52,11 @@ Tallying is currently underway and preparations for the new season are in progre
 {{$isSlip := eq (randInt 2) 1}}{{if $global.oily}}{{$isSlip = true}}{{$global.Set "oily" false}}{{$gc = true}}{{end}}
 {{$addedSlips := 0}}{{$targetID := 0}}{{$targetSlips := 0}}{{$header := "**Oh no!** 🍌"}}{{$body := ""}}{{$isSwap := false}}{{$isPlosion := false}}
 {{$slipType := "ns"}}
-{{$isSlip := true}}
 {{if $isSlip}}
-{{$luckyChance := $maxLuckyChance}}
+{{$luckyChance := $malc}}
 {{if le $currentRank 20}}
-{{$range := sub $maxLuckyChance $minLuckyChance}}
-{{$luckyChance = add $minLuckyChance (div (mult (sub $currentRank 1) $range) 19)}}
+{{$range := sub $malc $milc}}
+{{$luckyChance = add $milc (div (mult (sub $currentRank 1) $range) 19)}}
 {{end}}
 {{if ge $currentRank 11}}{{$luckyChance = add $luckyChance $global.pity}}{{end}}
 {{$wasTurbo := $userData.turbo}}
@@ -66,14 +64,14 @@ Tallying is currently underway and preparations for the new season are in progre
 {{$isLucky := le (randInt 1 10001) (mult $luckyChance 100)}}
 {{if and $isLucky (not $isCrashActive)}}
 {{if ge $currentRank 11}}{{$global.Set "pity" 0}}{{$gc = true}}{{end}}
-{{$tCrash := $oddsMarketCrash}}
-{{$tHalving := add $tCrash $oddsHalving}}
-{{$tSwap := add $tHalving $oddsRankSwap}}
-{{$tTurbo := add $tSwap $oddsTurbo}}
-{{$tPlosion := add $tTurbo $oddsPlosion}}
-{{$tOily := add $tPlosion $oddsOily}}
-{{$tMythic := add $tOily $oddsMythic}}
-{{$tCosmic := add $tMythic $oddsCosmic}}
+{{$tCrash := $oMarketCrash}}
+{{$tHalving := add $tCrash $oHalving}}
+{{$tSwap := add $tHalving $oRankSwap}}
+{{$tTurbo := add $tSwap $oTurbo}}
+{{$tPlosion := add $tTurbo $oPlosion}}
+{{$tOily := add $tPlosion $oOily}}
+{{$tMythic := add $tOily $oMythic}}
+{{$tCosmic := add $tMythic $oCosmic}}
 {{$roll := randInt 1 101}}
 {{if $wasTurbo}}
 {{$roll = randInt (add $tOily 1) 101}}
@@ -89,7 +87,7 @@ Tallying is currently underway and preparations for the new season are in progre
 {{$oldSlips = div $oldSlips 2}}
 {{$addedSlips = sub $oldSlips $preHalve}}
 {{$multiplier = 0}}
-{{$body = printf "\n📉💥 **CATASTROPHIC ERROR!** %s's entire slip count was just **HALVED**!" $userName}}
+{{$body = printf "\n📉💥 **BIG RIP!** %s's entire slip count was just **HALVED**!" $userName}}
 {{else if and (le $roll $tSwap) (ge $myIndex 0)}}
 {{$isSwap = true}}{{$multiplier = 0}}
 {{$offset := randInt 1 6}}
@@ -124,12 +122,12 @@ Tallying is currently underway and preparations for the new season are in progre
 {{$slipType = "ss"}}
 {{$isPlosion = true}}
 {{if eq $currentRank 1}}
-{{$addedSlips = -2}}{{$multiplier = 0}}
-{{$body = printf "\n💣 **SLIP-PLOSION!** %s hit the floor so hard they destroyed 2 of their own slips! 🌋" $userName}}
+{{$addedSlips = -3}}{{$multiplier = 0}}
+{{$body = printf "\n💣 **SLIPSPLOSION!** %s hit the floor so hard they destroyed 3 of their own slips! 🌋" $userName}}
 {{else if gt $myIndex 0}}
 {{$target := index $te (sub $myIndex 1)}}
-{{$targetID = $target.User.ID}}{{$targetSlips = sub (toInt $target.Value) 2}}
-{{$body = printf "\n💣 **SLIP-PLOSION!** %s sent a shockwave that destroyed 2 slips from <@%d>! 🌋" $userName $targetID}}
+{{$targetID = $target.User.ID}}{{$targetSlips = sub (toInt $target.Value) 3}}
+{{$body = printf "\n💣 **SLIPSPLOSION!** %s sent a shockwave that destroyed 3 slips from <@%d>! 🌋" $userName $targetID}}
 {{end}}
 {{else if le $roll $tOily}}
 {{$slipType = "os"}}
@@ -168,10 +166,10 @@ Tallying is currently underway and preparations for the new season are in progre
 {{if and $isSwap $targetID}}{{dbSet $targetID $ks (str $oldSlips)}}
 {{else if and $isPlosion $targetID}}{{dbSet $targetID $ks (str $targetSlips)}}{{end}}
 {{$finalRank := 1}}{{range $te}}{{if gt (toInt .Value) $newSlips}}{{$finalRank = add $finalRank 1}}{{end}}{{end}}
-[TEST] {{$header}}
-{{$body}}
-{{$userName}} just **{{if lt (toInt $addedSlips) 0}}lost {{mult (toInt $addedSlips) -1}}{{else}}gained {{toInt $addedSlips}}{{end}} slip{{if or (gt (toInt $addedSlips) 1) (lt (toInt $addedSlips) -1)}}s{{end}}** for a new total of **{{$newSlips}}** slips! Watch your step!
-Their clumsiness places them at rank **#{{$finalRank}}**!
+	[BETA] {{$header}}
+	{{$body}}
+	{{$userName}} just **{{if lt (toInt $addedSlips) 0}}lost {{mult (toInt $addedSlips) -1}}{{else}}gained {{toInt $addedSlips}}{{end}} slip{{if or (gt (toInt $addedSlips) 1) (lt (toInt $addedSlips) -1)}}s{{end}}** for a new total of **{{$newSlips}}** slips! Watch your step!
+	Their clumsiness places them at rank **#{{$finalRank}}**!
 {{else}}
 {{$earnedSlips := 0}}{{if $isCrashActive}}{{$earnedSlips = 5}}{{end}}
 {{$newStreak := add $userData.c 1}}{{$userData.Set "c" $newStreak}}
@@ -183,15 +181,18 @@ Their clumsiness places them at rank **#{{$finalRank}}**!
 {{$userData.Set "turbo" false}}
 {{$turboWaste = printf "\n🏎️💨 **TURBO WASTED!** %s dodged the peel, meaning the Turbo boost was for nothing!" $userName}}
 {{end}}
-[TEST] **CLEAN!** 🤸
-{{$userName}} dodged the peel! Streak: **{{$newStreak}}**, {{$streakStatus}} record of **{{$userData.r}}**. {{$turboWaste}}
+	[BETA] **CLEAN!** 🤸
+	{{$userName}} dodged the peel with a backflip!
+	They’ve now evaded gravity **{{ $newStreak }}** time{{ if ne $newStreak 1 }}s in a row{{ end }},
+	{{ $streakStatus }} all-time personal record of **{{ $userData.r }}**.
+	{{$turboWaste}}
 {{- if $isCrashActive -}}
-{{- $newTotal := add $oldSlips $earnedSlips -}}
-{{- dbSet .User.ID $ks (str $newTotal) -}}
-{{"\n"}}🚨 **MARKET CRASH ACTIVE!** {{$userName}} stole **5 Slips** from the market! Adding them to their new total of **{{$newTotal}}** slips! ({{$global.crash}} market crash rolls remaining)
+	{{- $newTotal := add $oldSlips $earnedSlips -}}
+	{{- dbSet .User.ID $ks (str $newTotal) -}}
+	{{"\n"}}🚨 **MARKET CRASH ACTIVE!** {{$userName}} stole **5 Slips** from the market! Adding them to their new total of **{{$newTotal}}** slips! ({{$global.crash}} market crash rolls remaining)
 {{- end -}}
 {{end}}
-{{if not $userData.turbo}}{{$userData.Set "cd" (add currentTime.Unix $cooldownDuration)}}{{end}}
+{{if not $userData.turbo}}{{$userData.Set "cd" (add currentTime.Unix $cdr)}}{{end}}
 {{dbSet .User.ID $keyData $userData}}
 {{if $gc}}{{dbSet 0 $keyGlobal $global}}{{end}}
 {{end}}

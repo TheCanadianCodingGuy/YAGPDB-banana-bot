@@ -1,5 +1,5 @@
 {{/* 1. Setup Data */}}
-{{ $pg := "prestige_global" }}
+{{ $pg := "BETA_prestige_global" }}
 {{ $limit := 10 }}
 {{ $prestigeMap := sdict }}{{ with (dbGet 0 $pg) }}{{ $prestigeMap = dict .Value | sdict }}{{ end }}
 
@@ -14,7 +14,7 @@
     {{ end }}
 {{ end }}{{ end }}
 
-### 🏆 Global Prestige Leaderboard (Top 10)
+### [BETA] 🏆 Global Prestige Leaderboard (Top 10)
 {{ if not $list }}*The prestige registry is currently empty.*
 {{ else }}
 {{- $prevScore := -1 -}}{{ $rank := 0 }}
@@ -54,4 +54,4 @@
 {{ $myDisplayName = reReplace `([*_~>|\x60])` $myDisplayName `\$1` }}
 {{ if gt $myScore 0 }}(🏆{{ $myScore }}) {{ end }}**{{ $myDisplayName }}** is currently ranked **{{ $myRank }}** with **{{ $myScore }}** total prestige.
 {{ end }}
-*💪 True prestige is earned in the slip.*
+*[BETA] 💪 True prestige is earned in the slip.*

@@ -10,9 +10,9 @@
     {{ return }}
 {{ end }}
 
-{{ $dbKey := "banana_slips" }}
-{{ $pg := "prestige_global" }}
-{{ $kg := "banana_global" }}
+{{ $dbKey := "BETA_banana_slips" }}
+{{ $pg := "BETA_prestige_global" }}
+{{ $kg := "BETA_banana_global" }}
 {{ $limit := 10 }}
 {{ $fetchAmount := 25 }}
 
@@ -29,9 +29,9 @@
 {{ $top := dbTopEntries $dbKey $fetchAmount 0 }}
 
 {{ if not $top }}
-    🍌 **The floors are clean!** No one has slipped on a banana peel yet.
+    [BETA] 🍌 **The floors are clean!** No one has slipped on a banana peel yet.
 {{ else }}
-    ### 🏆 Banana Season {{ $global.season }} Hall of Shame (Top 10)
+    ### [BETA]🏆 Banana Season {{ $global.season }} Hall of Shame (Top 10)
     **Started on:** <t:{{ $startOfMonth.Unix }}:F>
     **Ends on:** <t:{{ $endOfSeason.Unix }}:F> (<t:{{ $endOfSeason.Unix }}:R>)
 {{- "\n\u200b" -}}

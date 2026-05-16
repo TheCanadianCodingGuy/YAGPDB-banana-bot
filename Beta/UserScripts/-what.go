@@ -1,3 +1,4 @@
+{{/* Odds calculations based on your script's logic */}}
 {{ $cooldownHr := 6 }} {{/* 21600 seconds = 6 hours */}}
 {{ $marketCrashRolls := 3 }}
 {{ $oddsMarketCrash := 3 }}
@@ -8,10 +9,10 @@
 {{ $oddsOily := 12 }}
 {{ $oddsMythic := 3 }}
 {{ $oddsCosmic := 9 }}
-{{ $oddsGolden := 49 }}
+{{ $oddsGolden := 49 }} {{/* Remainder of 100 - others */}}
 
 {{ $embed := sdict
-    "title" "🍌 Welcome To The Official Guide on How to Banana"
+    "title" "[BETA] 🍌 Welcome To The Official Guide on How to Banana"
     "color" 16773120
     "description" "The goal is simple: **Slip often, slip hard.** Collect slips to climb the leaderboard before the season resets."
     "fields" (cslice
