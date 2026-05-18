@@ -83,9 +83,7 @@
 {{$body = printf "📉 **MARKET CRASH!** %s caused the economy to collapse! Slips grant 0 and flips grant 5 for the next %d rolls! 🚨" $userName (toInt $newCrashVal)}}
 {{else if le $roll $tHalving}}
 {{$slipType = "hs"}}
-{{$preHalve := $oldSlips}}
-{{$oldSlips = div $oldSlips 2}}
-{{$addedSlips = sub $oldSlips $preHalve}}
+{{$addedSlips := sub (div $oldSlips 2) $oldSlips}}
 {{$multiplier = 0}}
 {{$body = printf "📉💥 **BIG RIP!** %s's entire slip count was just **HALVED**!" $userName}}
 {{else if and (le $roll $tSwap) (ge $myIndex 0)}}
