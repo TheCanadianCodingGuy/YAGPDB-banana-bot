@@ -1,14 +1,14 @@
 {{ $cooldownHr := 6 }} {{/* 21600 seconds = 6 hours */}}
 {{ $marketCrashRolls := 3 }}
-{{ $oddsMarketCrash := 6 }}
-{{ $oddsHalving := 4 }}
-{{ $oddsRankSwap := 8 }}
-{{ $oddsTurbo := 11 }}
-{{ $oddsPlosion := 13 }}
+{{ $oddsMarketCrash := 8 }}
+{{ $oddsHalving := 6 }}
+{{ $oddsRankSwap := 10 }}
+{{ $oddsTurbo := 13 }}
+{{ $oddsPlosion := 15 }}
 {{ $oddsOily := 15 }}
 {{ $oddsMythic := 6 }}
 {{ $oddsCosmic := 12 }}
-{{ $oddsGolden := 25 }}
+{{ $oddsGolden := 15 }}
 
 {{ $embed := sdict
     "title" "🍌 Welcome To The Official Guide on How to Banana"

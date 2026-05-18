@@ -14,13 +14,13 @@
 {{$keyGlobal := "BETA_banana_global"}}
 {{$prestigeGlobal := "BETA_prestige_global"}}
 {{$cdr := 7200}}
-{{$milc := 15}}
-{{$malc := 75}}
-{{$oMarketCrash := 6}}
-{{$oHalving := 4}}
-{{$oRankSwap := 8}}
-{{$oTurbo := 11}}
-{{$oPlosion := 13}}
+{{$milc := 20}}
+{{$malc := 70}}
+{{$oMarketCrash := 8}}
+{{$oHalving := 6}}
+{{$oRankSwap := 10}}
+{{$oTurbo := 13}}
+{{$oPlosion := 15}}
 {{$oOily := 15}}
 {{$oMythic := 6}}
 {{$oCosmic := 12}}
@@ -58,12 +58,12 @@
 {{$range := sub $malc $milc}}
 {{$luckyChance = add $milc (div (mult (sub $currentRank 1) $range) 19)}}
 {{end}}
-{{if ge $currentRank 5}}{{$luckyChance = add $luckyChance $global.pity}}{{end}}
+{{if ge $currentRank 3}}{{$luckyChance = add $luckyChance $global.pity}}{{end}}
 {{$wasTurbo := $userData.turbo}}
 {{$multiplier := 1}}{{if $wasTurbo}}{{$multiplier = 2}}{{$userData.Set "turbo" false}}{{end}}
 {{$isLucky := le (randInt 1 10001) (mult $luckyChance 100)}}
 {{if and $isLucky (not $isCrashActive)}}
-{{if ge $currentRank 5}}{{$global.Set "pity" 0}}{{$gc = true}}{{end}}
+{{if ge $currentRank 3}}{{$global.Set "pity" 0}}{{$gc = true}}{{end}}
 {{$tCrash := $oMarketCrash}}
 {{$tHalving := add $tCrash $oHalving}}
 {{$tSwap := add $tHalving $oRankSwap}}
@@ -151,7 +151,7 @@
 {{$body = printf "%s\n🏎️💨 **TURBO BONUS!** %s's slip was worth **DOUBLE**!" $body $userName}}
 {{end}}
 {{else}}
-{{$global.Set "pity" (add $global.pity 5)}}{{$gc = true}}
+{{$global.Set "pity" (add $global.pity 10)}}{{$gc = true}}
 {{if $wasTurbo}}
 {{$body = printf "🏎️💨 **TURBO BONUS!** %s slipped on a regular peel, but was worth **DOUBLE**!" $userName}}
 {{else}}
