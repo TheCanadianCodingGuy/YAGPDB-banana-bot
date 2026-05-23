@@ -118,6 +118,9 @@
         That is **{{ $newSlips }}** total **slip{{ if ne $newSlips 1 }}s{{ end }}** for you. Watch your step!
 
         {{ $hype }} (Your clumsiness places you at rank **#{{ $finalRank }}**!)
+        
+        {{/* Dynamic Season 1 Countdown Footer */}}
+        ⏱️ **Season 1 Ends:** <t:1780156800:F> (<t:1780156800:R>)
     {{ else }}
         {{/* --- BACKFLIP BRANCH --- */}}
         {{ $newStreak := add $oldStreak 1 }} 
@@ -140,5 +143,8 @@
         {{ $userName }} dodged the peel with a backflip! 
         You’ve now evaded gravity **{{ $newStreak }}** time{{ if ne $newStreak 1 }}s in a row{{ end }},
         {{ $streakStatus }} all-time personal record of **{{ $newRecord }}**.
+        
+        {{/* Dynamic Season 1 Countdown Footer */}}
+        ⏱️ **Season 1 Ends:** <t:1780156800:F> (<t:1780156800:R>)
     {{ end }}
 {{ end }}

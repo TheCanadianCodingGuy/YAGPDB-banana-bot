@@ -1,15 +1,14 @@
-{{/* Odds calculations based on your script's logic */}}
-{{ $cooldownHr := 6 }} {{/* 21600 seconds = 6 hours */}}
+{{ $cooldownHr := 6 }}
 {{ $marketCrashRolls := 3 }}
-{{ $oddsMarketCrash := 3 }}
-{{ $oddsHalving := 1 }}
-{{ $oddsRankSwap := 5 }}
-{{ $oddsTurbo := 8 }}
-{{ $oddsPlosion := 10 }}
-{{ $oddsOily := 12 }}
-{{ $oddsMythic := 3 }}
-{{ $oddsCosmic := 9 }}
-{{ $oddsGolden := 49 }} {{/* Remainder of 100 - others */}}
+{{ $oddsMarketCrash := 7 }}
+{{ $oddsBigRip := 5}}
+{{ $oddsRankSwap := 8 }}
+{{ $oddsTurbo := 12 }}
+{{ $oddsPlosion := 14 }}
+{{ $oddsOily := 14 }}
+{{ $oddsMythic := 5 }}
+{{ $oddsCosmic := 11 }}
+{{ $oddsGolden := 21 }} {{/* Remainder of 100 - others */}}
 
 {{ $embed := sdict
     "title" "[BETA] 🍌 Welcome To The Official Guide on How to Banana"
@@ -24,7 +23,7 @@
         
         (sdict "name" "🎢 Lucky Peel Multipliers" "value" (printf "Hit a Lucky Slip to trigger these bonuses:\n• **Golden Peel (%d%%):** Gained 2 slips!\n• **Cosmic Peel (%d%%):** Gained 5 slips!\n• **Mythic Peel (%d%%):** Gained 10 slips!" $oddsGolden $oddsCosmic $oddsMythic) "inline" false)
 
-        (sdict "name" "⚠️ Chaos Events (Triggered on Lucky Slips)" "value" (printf "• **Oily Floor (%d%%):** Dooms the next player to a guaranteed slip.\n• **Slipsplosion (%d%%):** Destroy 3 slips from the person ranked above you!\n• **Turbo Overdrive (%d%%):** Resets cooldown and makes your next slip x2.\n• **Rank Swap (%d%%):** Swap your total slips with someone nearby.\n• **Market Crash (%d%%):** Slips grant 0 for %d rolls, but flipping steals 5 slips from the market!\n• **The Big Rip (%d%%):** Your total slips are **HALVED** immediately." $oddsOily $oddsPlosion $oddsTurbo $oddsRankSwap $oddsMarketCrash $marketCrashRolls $oddsHalving) "inline" false)
+        (sdict "name" "⚠️ Chaos Events (Triggered on Lucky Slips)" "value" (printf "• **Oily Floor (%d%%):** Dooms the next player to a guaranteed slip.\n• **Slipsplosion (%d%%):** Destroy 3 slips from the person ranked above you!\n• **Turbo Overdrive (%d%%):** Resets cooldown and makes your next slip x2.\n• **Rank Swap (%d%%):** Swap your total slips with someone nearby.\n• **Market Crash (%d%%):** Slips grant 0 for %d rolls, but flipping steals 5 slips from the market!\n• **The Big Rip (%d%%):** Your total slips are **HALVED** immediately." $oddsOily $oddsPlosion $oddsTurbo $oddsRankSwap $oddsMarketCrash $marketCrashRolls $oddsBigRip) "inline" false)
 
         (sdict "name" "🏆 Prestige" "value" "Winners of past seasons carry the **(🏆)** badge. Check the Global Prestige Leaderboard!" "inline" false)
     )
