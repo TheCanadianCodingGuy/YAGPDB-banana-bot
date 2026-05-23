@@ -1,5 +1,5 @@
 {{/* Configuration */}}
-{{ $kg := "TEST_banana_global" }}
+{{ $kg := "banana_global" }}
 
 {{/* 1. Fetch current or setup defaults */}}
 {{ $global := sdict "pity" 0 "oily" false "crash" 0 "season" 1 }}
@@ -15,9 +15,3 @@
 
 {{/* 3. Save to Database */}}
 {{ dbSet 0 $kg $global }}
-
-✅ **Global Database Updated:**
-- **Season:** {{ $global.season }}
-- **Pity:** {{ $global.pity }}
-- **Oily Floor:** {{ $global.oily }}
-- **Market Crash:** {{ $global.crash }}

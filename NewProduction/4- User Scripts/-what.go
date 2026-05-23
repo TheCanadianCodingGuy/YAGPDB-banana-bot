@@ -1,4 +1,4 @@
-{{ $cooldownHr := 6 }}
+{{ $cooldownHr := 6 }} {{/* 21600 seconds = 6 hours */}}
 {{ $marketCrashRolls := 3 }}
 {{ $oddsMarketCrash := 7 }}
 {{ $oddsBigRip := 5}}
@@ -11,7 +11,7 @@
 {{ $oddsGolden := 21 }} {{/* Remainder of 100 - others */}}
 
 {{ $embed := sdict
-    "title" "[BETA] 🍌 Welcome To The Official Guide on How to Banana"
+    "title" "🍌 Welcome To The Official Guide on How to Banana"
     "color" 16773120
     "description" "The goal is simple: **Slip often, slip hard.** Collect slips to climb the leaderboard before the season resets."
     "fields" (cslice
@@ -23,7 +23,7 @@
         
         (sdict "name" "🎢 Lucky Peel Multipliers" "value" (printf "Hit a Lucky Slip to trigger these bonuses:\n• **Golden Peel (%d%%):** Gained 2 slips!\n• **Cosmic Peel (%d%%):** Gained 5 slips!\n• **Mythic Peel (%d%%):** Gained 10 slips!" $oddsGolden $oddsCosmic $oddsMythic) "inline" false)
 
-        (sdict "name" "⚠️ Chaos Events (Triggered on Lucky Slips)" "value" (printf "• **Oily Floor (%d%%):** Dooms the next player to a guaranteed slip.\n• **Slipsplosion (%d%%):** Destroy 3 slips from the person ranked above you!\n• **Turbo Overdrive (%d%%):** Resets cooldown and makes your next slip x2.\n• **Rank Swap (%d%%):** Swap your total slips with someone nearby.\n• **Market Crash (%d%%):** Slips grant 0 for %d rolls, but flipping steals 5 slips from the market!\n• **The Big Rip (%d%%):** Your total slips are **HALVED** immediately." $oddsOily $oddsPlosion $oddsTurbo $oddsRankSwap $oddsMarketCrash $marketCrashRolls $oddsBigRip) "inline" false)
+        (sdict "name" "⚠️ Chaos Events (Triggered on Lucky Slips)" "value" (printf "• **Oily Floor (%d%%):** Dooms the next player to a guaranteed slip.\n• **Slipsplosion (%d%%):** Destroy 3 slips from the person ranked above you!\n• **Turbo Overdrive (%d%%):** Resets cooldown and makes your next slip x2.\n• **Rank Swap (%d%%):** Swap your total slips with someone nearby.\n• **Market Crash (%d%%):** Slips grant 0 for %d rolls, but flipping steals 5 slips from the market!\n• **The Big Rip (%d%%):** Your total slips are **HALVED** immediately." $oddsOily $oddsPlosion $oddsTurbo $oddsRankSwap $oddsMarketCrash $marketCrashRolls $oddsHalving) "inline" false)
 
         (sdict "name" "🏆 Prestige" "value" "Winners of past seasons carry the **(🏆)** badge. Check the Global Prestige Leaderboard!" "inline" false)
     )

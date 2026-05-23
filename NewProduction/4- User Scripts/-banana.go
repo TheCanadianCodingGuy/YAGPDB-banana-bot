@@ -9,10 +9,10 @@
     **Next season starts at:** <t:{{$ssu}}:F> (<t:{{$ssu}}:R>)
     {{return}}
 {{end}}
-{{$ks := "BETA_banana_slips"}}
-{{$keyData := "BETA_banana_data"}}
-{{$keyGlobal := "BETA_banana_global"}}
-{{$prestigeGlobal := "BETA_prestige_global"}}
+{{$ks := "banana_slips"}}
+{{$keyData := "banana_data"}}
+{{$keyGlobal := "banana_global"}}
+{{$prestigeGlobal := "prestige_global"}}
 {{$cooldownDuration := 7200}}
 {{$milc := 20}}
 {{$malc := 70}}
@@ -39,7 +39,7 @@
 {{end}}
 {{$te := dbTopEntries $ks 100 0}}
 {{if and (gt (toInt $userData.cd) (toInt $now.Unix)) (not $userData.turbo)}}
-    [BETA] {{$userName}}, you look around but see no banana peel to slip on! How sad!
+    {{$userName}}, you look around but see no banana peel to slip on! How sad!
     **Try again <t:{{toInt $userData.cd}}:R>!**
 {{else}}
     {{$currentRank := 101}}{{$myIndex := -1}}{{$prevVal := -1}}{{$rankTracker := 0}}
@@ -164,7 +164,7 @@
         {{if and $isSwap $targetID}}{{dbSet $targetID $ks (str $oldSlips)}}
         {{else if and $isPlosion $targetID}}{{dbSet $targetID $ks (str $targetSlips)}}{{end}}
         {{$finalRank := 1}}{{range $te}}{{if gt (toInt .Value) $newSlips}}{{$finalRank = add $finalRank 1}}{{end}}{{end}}
-        [BETA] {{$header}}
+        {{$header}}
         {{$body}}
         You just **{{if lt (toInt $addedSlips) 0}}lost {{mult (toInt $addedSlips) -1}}{{else}}gained {{toInt $addedSlips}}{{end}} slip{{if or (gt (toInt $addedSlips) 1) (lt (toInt $addedSlips) -1)}}s{{end}}** for a new total of **{{$newSlips}}** slips! Watch your step!
         Your clumsiness places you at rank **#{{$finalRank}}**!
@@ -179,7 +179,7 @@
             {{$userData.Set "turbo" false}}
             {{$turboWaste = printf "\n🏎️💨 **TURBO WASTED!** %s dodged the peel, meaning the Turbo boost was for nothing!" $userName}}
         {{end}}
-        [BETA] **CLEAN!** 🤸
+        **CLEAN!** 🤸
         {{$userName}} dodged the peel with a backflip!
         You’ve now evaded gravity **{{ $newStreak }}** time{{ if ne $newStreak 1 }}s in a row{{ end }},
         {{ $streakStatus }} all-time personal record of **{{ $userData.r }}**.
