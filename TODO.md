@@ -10,10 +10,10 @@ a) keep a copy of minified prod script for <10000 chars
 HOW TO RELEASE
 1) run and pin -commandslist in #slippery-slope
 2) run and pin -what in #slippery-slope
-3) run 1- -globalsetup.go in #slippery-slope
+3) run 1- -globalsetup.go in #bot-test
 4) run 2- -tallyslips.go in #slippery-slope
 5) run 3- -oldseasonpurge.go enough to purge all db while in #bot-test
-6) run 4- -incrementseason.go
+6) run 4- -incrementseason.go in #bot-test
 7) activate cron for seasonstartannouncement (only that one)
 
 ONCE SEASON START
