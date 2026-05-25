@@ -13,16 +13,16 @@
 {{$keyData := "banana_data"}}
 {{$keyGlobal := "banana_global"}}
 {{$prestigeGlobal := "prestige_global"}}
-{{$cooldownDuration := 7200}}
+{{$cooldownDuration := 18000}}
 {{$milc := 20}}
 {{$malc := 70}}
 {{$oMarketCrash := 7}}
-{{$oHalving := 5}}
-{{$oRankSwap := 8}}
+{{$oHalving := 3}}
+{{$oRankSwap := 4}}
 {{$oTurbo := 12}}
 {{$oPlosion := 14}}
 {{$oOily := 14}}
-{{$oMythic := 5}}
+{{$oMythic := 6}}
 {{$oCosmic := 11}}
 {{$rawName := .User.Username}}
 {{if .Member.Nick}}{{$rawName = .Member.Nick}}
@@ -88,7 +88,7 @@
                 {{$body = printf "📉💥 **BIG RIP!** %s's entire slip count was just **HALVED**!" $userName}}
             {{else if and (le $roll $tSwap) (ge $myIndex 0)}}
                 {{$isSwap = true}}{{$multiplier = 0}}
-                {{$offset := randInt 1 6}}
+                {{$offset := randInt 1 3}}
                 {{$targetIdx := 0}}
                 {{if le $currentRank 10}}
                     {{$targetIdx = add $myIndex $offset}}
