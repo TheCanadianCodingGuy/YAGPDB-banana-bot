@@ -4,7 +4,7 @@
 {{$ssu := $ss.Unix}}
 {{$lsu := sub $ssu 21600}}
 {{if ge (toInt $now.Unix) (toInt $lsu)}}
-    🚫 **The season has ended!**
+🚫 **The season has ended!**
 	Tallying is currently underway and preparations for the new season are in progress.
     **Next season starts at:** <t:{{$ssu}}:F> (<t:{{$ssu}}:R>)
     {{return}}
@@ -13,11 +13,11 @@
 {{$keyData := "banana_data"}}
 {{$keyGlobal := "banana_global"}}
 {{$prestigeGlobal := "prestige_global"}}
-{{$cooldownDuration := 18000}}
+{{$cdr := 18000}}
 {{$milc := 20}}
 {{$malc := 70}}
 {{$oMarketCrash := 7}}
-{{$oHalving := 3}}
+{{$oHalving := 1}}
 {{$oRankSwap := 4}}
 {{$oTurbo := 12}}
 {{$oPlosion := 14}}
@@ -29,7 +29,7 @@
 {{else if .User.Globalname}}{{$rawName = .User.Globalname}}{{end}}
 {{$userName := reReplace `([*_~>|\x60])` $rawName `\$1`}}
 {{$oldSlips := 0}}{{with (dbGet .User.ID $ks)}}{{$oldSlips = toInt .Value}}{{end}}
-{{$userData := sdict "c" 0 "r" 0 "turbo" false "cd" 0 "mcs" 0 "hs" 0 "rss" 0 "gs" 0 "ts" 0 "ss" 0 "os" 0 "ms" 0 "cs" 0 "ns" 0 "f" 0}}{{with (dbGet .User.ID $keyData)}}{{$userData = dict .Value | sdict}}{{end}}
+{{$userData := sdict "c" 0 "r" 0 "turbo" false "cd" 0 "s_mcs" 0 "s_hs" 0 "s_rss" 0 "s_gs" 0 "s_ts" 0 "s_ss" 0 "s_os" 0 "s_ms" 0 "s_cs" 0 "s_ns" 0 "s_f" 0 "g_mcs" 0 "g_hs" 0 "g_rss" 0 "g_gs" 0 "g_ts" 0 "g_ss" 0 "g_os" 0 "g_ms" 0 "g_cs" 0 "g_ns" 0 "g_f" 0}}{{with (dbGet .User.ID $keyData)}}{{$userData = dict .Value | sdict}}{{end}}
 {{$global := sdict "pity" 0 "oily" false "crash" 0 "season" 0}}{{with (dbGet 0 $keyGlobal)}}{{$global = dict .Value | sdict}}{{end}}
 {{$gc := false}}
 {{$prestigeMap := sdict}}{{with (dbGet 0 $prestigeGlobal)}}{{$prestigeMap = dict .Value | sdict}}{{end}}
@@ -159,7 +159,8 @@
         {{if $isCrashActive}}{{$addedSlips = 0}}{{$body = printf "\n🚨 **MARKET CRASH ACTIVE!** %s's slip was worthless! +0 Slips. (%d market crash rolls remaining)" $userName (toInt $global.crash)}}
         {{else if not $isSwap}}{{$addedSlips = add $addedSlips $multiplier}}{{end}}
         {{$newSlips := add $oldSlips $addedSlips}}{{$userData.Set "c" 0}}
-        {{$userData.Set $slipType (add (toInt ($userData.Get $slipType)) 1)}}
+        {{$userData.Set "s_" $slipType (add (toInt ($userData.Get "s_" $slipType)) 1)}}
+        {{$userData.Set "g_" $slipType (add (toInt ($userData.Get "g_" $slipType)) 1)}}
         {{dbSet .User.ID $ks (str $newSlips)}}
         {{if and $isSwap $targetID}}{{dbSet $targetID $ks (str $oldSlips)}}
         {{else if and $isPlosion $targetID}}{{dbSet $targetID $ks (str $targetSlips)}}{{end}}
@@ -171,7 +172,8 @@
     {{else}}
         {{$earnedSlips := 0}}{{if $isCrashActive}}{{$earnedSlips = 5}}{{end}}
         {{$newStreak := add $userData.c 1}}{{$userData.Set "c" $newStreak}}
-        {{$userData.Set "f" (add (toInt ($userData.Get "flip")) 1)}}
+        {{$userData.Set "s_f" (add (toInt ($userData.Get "s_f")) 1)}}
+        {{$userData.Set "g_f" (add (toInt ($userData.Get "g_f")) 1)}}
         {{$streakStatus := "chasing your"}}{{if gt $newStreak $userData.r}}{{$streakStatus = "setting a new"}}{{$userData.Set "r" $newStreak}}
         {{else if eq $newStreak $userData.r}}{{$streakStatus = "pulling even with your"}}{{end}}
         {{$turboWaste := ""}}
@@ -190,7 +192,7 @@
             {{"\n"}}🚨 **MARKET CRASH ACTIVE!** {{$userName}} stole **5 Slips** from the market! Adding them to their new total of **{{$newTotal}}** slips! ({{$global.crash}} market crash rolls remaining)
         {{- end -}}
     {{end}}
-    {{if not $userData.turbo}}{{$userData.Set "cd" (add currentTime.Unix $cooldownDuration)}}{{end}}
+    {{if not $userData.turbo}}{{$userData.Set "cd" (add currentTime.Unix $cdr)}}{{end}}
     {{dbSet .User.ID $keyData $userData}}
     {{if $gc}}{{dbSet 0 $keyGlobal $global}}{{end}}
 {{end}}
