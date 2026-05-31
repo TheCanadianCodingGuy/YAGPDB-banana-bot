@@ -1,4 +1,4 @@
-{{ $allowedCommands := cslice "-banana" "-lifetimestats" "seasonstats" "-commandlist" "-topslips" "-topflips" "-topprestiges" "-what" }}
+{{ $allowedCommands := cslice "-banana" "-lifetimestats" "-seasonstats" "-commandlist" "-topslips" "-topflips" "-topprestiges" "-what" }}
 
 {{ $modRoleID := "1196392951333523476" }}
 {{ $yagID := "204255221017214977" }}
