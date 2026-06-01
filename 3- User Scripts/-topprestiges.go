@@ -31,7 +31,7 @@
             {{- $mem := getMember $entry.id }}{{ if $mem }}{{ if $mem.Nick }}{{ $rawName = $mem.Nick }}{{ end }}{{ end -}}
         {{- end -}}
         {{- $name := reReplace `([*_~>|\x60])` $rawName `\$1` -}}
-**#{{ $rank }}:** (🏆{{ $score }}) {{ $name }} — `{{ $score }} prestige`
+**#{{ $rank }}:** (🏆{{ $score }}) {{ $name }} — `{{ $score }} prestige points`
     {{- end }}
 {{ end }}
 
@@ -52,6 +52,6 @@
 {{- $myDisplayName := .User.Username -}}
 {{- if .Member.Nick }}{{ $myDisplayName = .Member.Nick }}{{ else if .User.Globalname }}{{ $myDisplayName = .User.Globalname }}{{ end -}}
 {{ $myDisplayName = reReplace `([*_~>|\x60])` $myDisplayName `\$1` }}
-{{ if gt $myScore 0 }}(🏆{{ $myScore }}) {{ end }}**{{ $myDisplayName }}** is currently ranked **{{ $myRank }}** with **{{ $myScore }}** total prestige.
+{{ if gt $myScore 0 }}(🏆{{ $myScore }}) {{ end }}**{{ $myDisplayName }}** is currently ranked **{{ $myRank }}** with **{{ $myScore }}** total prestige points.
 {{ end }}
 *💪 True prestige is earned in the slip.*

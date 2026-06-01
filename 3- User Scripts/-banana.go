@@ -159,8 +159,8 @@
         {{if $isCrashActive}}{{$addedSlips = 0}}{{$body = printf "\n🚨 **MARKET CRASH ACTIVE!** %s's slip was worthless! +0 Slips. (%d market crash rolls remaining)" $userName (toInt $global.crash)}}
         {{else if not $isSwap}}{{$addedSlips = add $addedSlips $multiplier}}{{end}}
         {{$newSlips := add $oldSlips $addedSlips}}{{$userData.Set "c" 0}}
-        {{$userData.Set "s_" $slipType (add (toInt ($userData.Get "s_" $slipType)) 1)}}
-        {{$userData.Set "g_" $slipType (add (toInt ($userData.Get "g_" $slipType)) 1)}}
+        {{$userData.Set (print "s_" $slipType) (add (toInt ($userData.Get (print "s_" $slipType))) 1)}}
+        {{$userData.Set (print "g_" $slipType) (add (toInt ($userData.Get (print "g_" $slipType))) 1)}}
         {{dbSet .User.ID $ks (str $newSlips)}}
         {{if and $isSwap $targetID}}{{dbSet $targetID $ks (str $oldSlips)}}
         {{else if and $isPlosion $targetID}}{{dbSet $targetID $ks (str $targetSlips)}}{{end}}
