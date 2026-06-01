@@ -5,7 +5,7 @@
 {{$lsu := sub $ssu 21600}}
 {{if ge (toInt $now.Unix) (toInt $lsu)}}
 🚫 **The season has ended!**
-	Tallying is currently underway and preparations for the new season are in progress.
+    Tallying is currently underway and preparations for the new season are in progress.
     **Next season starts at:** <t:{{$ssu}}:F> (<t:{{$ssu}}:R>)
     {{return}}
 {{end}}
@@ -50,8 +50,9 @@
     {{$isCrashActive := gt $global.crash 0}}
     {{if $isCrashActive}}{{$global.Set "crash" (sub $global.crash 1)}}{{$gc = true}}{{end}}
     {{$isSlip := eq (randInt 2) 1}}{{if $global.oily}}{{$isSlip = true}}{{$global.Set "oily" false}}{{$gc = true}}{{end}}
-    {{$addedSlips := 0}}{{$targetID := 0}}{{$targetSlips := 0}}{{$header := "**Oh no!** 🍌"}}{{$body := ""}}{{$isSwap := false}}{{$isPlosion := false}}
+    {{$addedSlips := 0}}{{$targetID := 0}}{{$targetSlips := 0}}{{$header := "**Oh no!** 🍌"}}{{$isSwap := false}}{{$isPlosion := false}}
     {{$slipType := "ns"}}
+    {{$msgContext := sdict "body" ""}}
     {{if $isSlip}}
         {{$luckyChance := $malc}}
         {{if le $currentRank 20}}
@@ -80,12 +81,12 @@
                 {{$slipType = "mcs"}}
                 {{$newCrashVal := add $global.crash 3}}
                 {{$global.Set "crash" $newCrashVal}}{{$gc = true}}
-                {{$body = printf "📉 **MARKET CRASH!** %s caused the economy to collapse! Slips grant 0 and flips grant 5 for the next %d rolls! 🚨" $userName (toInt $newCrashVal)}}
+                {{$msgContext.Set "body" (printf "📉 **MARKET CRASH!** %s caused the economy to collapse! Slips grant 0 and flips grant 5 for the next %d rolls! 🚨" $userName (toInt $newCrashVal))}}
             {{else if le $roll $tHalving}}
                 {{$slipType = "hs"}}
-                {{$addedSlips := sub (div $oldSlips 2) $oldSlips}}
+                {{$addedSlips = sub (div $oldSlips 2) $oldSlips}}
                 {{$multiplier = 0}}
-                {{$body = printf "📉💥 **BIG RIP!** %s's entire slip count was just **HALVED**!" $userName}}
+                {{$msgContext.Set "body" (printf "📉💥 **BIG RIP!** %s's entire slip count was just **HALVED**!" $userName)}}
             {{else if and (le $roll $tSwap) (ge $myIndex 0)}}
                 {{$isSwap = true}}{{$multiplier = 0}}
                 {{$offset := randInt 1 3}}
@@ -103,61 +104,67 @@
                     {{$targetID = $target.User.ID}}{{$targetSlips = toInt $target.Value}}
                     {{$addedSlips = sub $targetSlips $oldSlips}}
                     {{if lt $targetIdx $myIndex}}
-                        {{$body = printf "🚀 **RANK SWAP!** %s vaulted upwards and swapped their **%d** slips with <@%d>'s **%d** slips! 🏎️💨" $userName $oldSlips $targetID $targetSlips}}
+                        {{$msgContext.Set "body" (printf "🚀 **RANK SWAP!** %s vaulted upwards and swapped their **%d** slips with <@%d>'s **%d** slips! 🏎️💨" $userName $oldSlips $targetID $targetSlips)}}
                     {{else}}
-                        {{$body = printf "📉 **RANK SWAP!** %s fumbled and swapped their **%d** slips with <@%d>'s **%d** slips from below! 🤼‍♂️" $userName $oldSlips $targetID $targetSlips}}
+                        {{$msgContext.Set "body" (printf "📉 **RANK SWAP!** %s fumbled and swapped their **%d** slips with <@%d>'s **%d** slips from below! 🤼‍♂️" $userName $oldSlips $targetID $targetSlips)}}
                     {{end}}
                 {{else}}
                     {{$slipType = "gs"}}
                     {{$isSwap = false}}{{$multiplier = 2}}
-                    {{$body = printf "😮 %s tried to swap, but no one was there! A **Golden Peel** was found instead." $userName}}
+                    {{$msgContext.Set "body" (printf "😮 %s tried to swap, but no one was there! A **Golden Peel** was found instead." $userName)}}
                 {{end}}
             {{else if le $roll $tTurbo}}
                 {{$slipType = "ts"}}
                 {{$userData.Set "turbo" true}}
-                {{$body = printf "🔥 **TURBO OVERDRIVE!** %s hit top speeds! Cooldown is reset and next slip is worth **DOUBLE**! 🏎️💨" $userName}}
+                {{$msgContext.Set "body" (printf "🔥 **TURBO OVERDRIVE!** %s hit top speeds! Cooldown is reset and next slip is worth **DOUBLE**! 🏎️💨" $userName)}}
             {{else if le $roll $tPlosion}}
                 {{$slipType = "ss"}}
                 {{$isPlosion = true}}
                 {{if eq $currentRank 1}}
                     {{$addedSlips = -3}}{{$multiplier = 0}}
-                    {{$body = printf "💣 **SLIPSPLOSION!** %s hit the floor so hard they destroyed 3 of their own slips! 🌋" $userName}}
+                    {{$msgContext.Set "body" (printf "💣 **SLIPSPLOSION!** %s hit the floor so hard they destroyed 3 of their own slips! 🌋" $userName)}}
                 {{else if gt $myIndex 0}}
                     {{$target := index $te (sub $myIndex 1)}}
                     {{$targetID = $target.User.ID}}{{$targetSlips = sub (toInt $target.Value) 3}}
-                    {{$body = printf "💣 **SLIPSPLOSION!** %s sent a shockwave that destroyed 3 slips from <@%d>! 🌋" $userName $targetID}}
+                    {{$msgContext.Set "body" (printf "💣 **SLIPSPLOSION!** %s sent a shockwave that destroyed 3 slips from <@%d>! 🌋" $userName $targetID)}}
                 {{end}}
             {{else if le $roll $tOily}}
                 {{$slipType = "os"}}
                 {{$global.Set "oily" true}}{{$gc = true}}
-                {{$body = printf "🛢️💀 **OILY FLOOR!** %s spilled grease! The next roller is **DOOMED** to slip." $userName}}
+                {{$msgContext.Set "body" (printf "🛢️💀 **OILY FLOOR!** %s spilled grease! The next roller is **DOOMED** to slip." $userName)}}
             {{else if le $roll $tMythic}}
                 {{$slipType = "ms"}}
                 {{$header = "**HOLY CRAP!** 😱😱😱"}}
                 {{$multiplier = mult $multiplier 10}}
-                {{$body = printf "🎆🎆🎆 ***%s JUST SLIPPED ON A DANG MYTHIC PEEL WORTH %d SLIPS!*** 🎆🎆🎆" $userName $multiplier}}
+                {{$msgContext.Set "body" (printf "🎆🎆🎆 ***%s JUST SLIPPED ON A DANG MYTHIC PEEL WORTH %d SLIPS!*** 🎆🎆🎆" $userName $multiplier)}}
             {{else if le $roll $tCosmic}}
                 {{$slipType = "cs"}}
                 {{$multiplier = mult $multiplier 5}}
-                {{$body = printf "🌟🌌🌟 %s just slipped on a rare ***cosmic peel*** worth ***%d slips!*** 🌟🌌🌟" $userName $multiplier}}
+                {{$msgContext.Set "body" (printf "🌟🌌🌟 %s just slipped on a rare ***cosmic peel*** worth ***%d slips!*** 🌟🌌🌟" $userName $multiplier)}}
             {{else}}
                 {{$slipType = "gs"}}
                 {{$multiplier = mult $multiplier 2}}
-                {{$body = printf "😮 %s just slipped on a peel made of **pure gold** worth **%d slips!**" $userName $multiplier}}
+                {{$msgContext.Set "body" (printf "😮 %s just slipped on a peel made of **pure gold** worth **%d slips!**" $userName $multiplier)}}
             {{end}}
             {{if $wasTurbo}}
-                {{$body = printf "%s\n🏎️💨 **TURBO BONUS!** %s's slip was worth **DOUBLE**!" $body $userName}}
+                {{$msgContext.Set "body" (printf "%s\n   🏎️💨 **TURBO BONUS!** %s's slip was worth **DOUBLE**!" $msgContext.body $userName)}}
             {{end}}
         {{else}}
             {{$global.Set "pity" (add $global.pity 10)}}{{$gc = true}}
             {{if $wasTurbo}}
-                {{$body = printf "🏎️💨 **TURBO BONUS!** %s slipped on a regular peel, but was worth **DOUBLE**!" $userName}}
+                {{$msgContext.Set "body" (printf "🏎️💨 **TURBO BONUS!** %s slipped on a regular peel, but was worth **DOUBLE**!" $userName)}}
             {{else}}
-                {{$body = printf "   %s just slipped on a peel!" $userName}}
+                {{$msgContext.Set "body" (printf "%s just slipped on a peel!" $userName)}}
             {{end}}
         {{end}}
-        {{if $isCrashActive}}{{$addedSlips = 0}}{{$body = printf "\n🚨 **MARKET CRASH ACTIVE!** %s's slip was worthless! +0 Slips. (%d market crash rolls remaining)" $userName (toInt $global.crash)}}
-        {{else if not $isSwap}}{{$addedSlips = add $addedSlips $multiplier}}{{end}}
+        
+        {{if $isCrashActive}}
+            {{$addedSlips = 0}}
+            {{$msgContext.Set "body" (printf "%s\n   🚨 **MARKET CRASH ACTIVE!** %s's slip was worthless! +0 Slips. (%d market crash rolls remaining)" $msgContext.body $userName (toInt $global.crash))}}
+        {{else if not $isSwap}}
+            {{$addedSlips = add $addedSlips $multiplier}}
+        {{end}}
+        
         {{$newSlips := add $oldSlips $addedSlips}}{{$userData.Set "c" 0}}
         {{$userData.Set (print "s_" $slipType) (add (toInt ($userData.Get (print "s_" $slipType))) 1)}}
         {{$userData.Set (print "g_" $slipType) (add (toInt ($userData.Get (print "g_" $slipType))) 1)}}
@@ -166,7 +173,7 @@
         {{else if and $isPlosion $targetID}}{{dbSet $targetID $ks (str $targetSlips)}}{{end}}
         {{$finalRank := 1}}{{range $te}}{{if gt (toInt .Value) $newSlips}}{{$finalRank = add $finalRank 1}}{{end}}{{end}}
         {{$header}}
-        {{$body}}
+        {{$msgContext.body}}
         You just **{{if lt (toInt $addedSlips) 0}}lost {{mult (toInt $addedSlips) -1}}{{else}}gained {{toInt $addedSlips}}{{end}} slip{{if or (gt (toInt $addedSlips) 1) (lt (toInt $addedSlips) -1)}}s{{end}}** for a new total of **{{$newSlips}}** slips! Watch your step!
         Your clumsiness places you at rank **#{{$finalRank}}**!
     {{else}}
